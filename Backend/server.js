@@ -1,0 +1,30 @@
+import dotenv from "dotenv";
+dotenv.config();
+import crypto from "crypto";
+
+import express from "express";
+import cors from "cors";
+import userAuthRoutes from "./assets/routes/user.auth.routes.js";
+import cookieParser from "cookie-parser";
+
+const app = express();
+
+const PORT = process.env.PORT || 5000;
+
+const origin = process.env.CLIENT_URL || "http://localhost:5173";
+
+app.use(
+  cors({
+    origin: origin,
+    credentials: true, // ✅ MUST be lowercase
+  }),
+);
+
+app.use(express.json());
+app.use(cookieParser())
+
+app.use("/api", userAuthRoutes);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
