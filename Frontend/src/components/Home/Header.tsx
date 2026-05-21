@@ -276,44 +276,28 @@ const Header = () => {
                       </li>
 
                       <li>
-                        <Link to="/about">About Us</Link>
+                        <Link to="/about-us">About Us</Link>
                       </li>
-
-                      {/* SUBMENU FIXED SECTION */}
                       <li>
-                        <a href="#">Pages</a>
-
-                        <ul className="submenu">
-                          <li>
-                            <Link to="/about">About Us</Link>
-                          </li>
-
-                          <li>
-                            <Link to="/room-details">Room Details</Link>
-                          </li>
-
-                          <li>
-                            <Link to="/blog-details">Blog Details</Link>
-                          </li>
-                        </ul>
+                        <Link to="/book-now">Book Now</Link>
                       </li>
-
                       <li>
-                        <Link to="/blog">News</Link>
+                        <Link to={"/room/details"}>Room Details</Link>
                       </li>
-
-                      <li>
-                        <Link to="/contact">Contact</Link>
-                      </li>
+                     
 
                     </ul>
-                  </nav>
+                    <div className="position-relative d-inline-block text-white">
+                      <Link to={"/booking/cart"}>
+                         <i className="bi bi-suitcase-lg fs-3"></i>
+                      </Link>
+   
 
-                  <div className="header__nav__widget">
-                    <a href="#">
-                      Book Now <span className="arrow_right"></span>
-                    </a>
-                  </div>
+    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        2
+    </span>
+</div>
+                  </nav>
 
                 </div>
               </div>

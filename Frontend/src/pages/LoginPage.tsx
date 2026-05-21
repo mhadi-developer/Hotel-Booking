@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/immutability */
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import axiosInstance from "../resources/axios.Instance.create";
 import { Bounce, ToastContainer , toast } from "react-toastify";
 
@@ -23,7 +24,7 @@ import { Bounce, ToastContainer , toast } from "react-toastify";
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
-  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -43,7 +44,7 @@ export const LoginForm = () => {
     const response = await axiosInstance.post("/login",  data );
     if (response.statusText) {
       toast.success("login successsfully redirecting....");
-      navigate("/");
+      window.location.href = ('/');
       
     }
     

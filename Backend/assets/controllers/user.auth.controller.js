@@ -102,7 +102,7 @@ export const getLoggedInUser = async (req, res) => {
 export const logoutUser = async (req, res) => {
  
   try {
-    res.cookie("token", "", {
+    res.clearCookie("token", "", {
       httpOnly: true,
       secure: true, // true in production (HTTPS)
       sameSite: "strict",

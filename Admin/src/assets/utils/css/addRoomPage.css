@@ -1,0 +1,717 @@
+/* ═══════════════════════════════════════════════════════════
+   AddRoom.css  —  Luxury Hospitality Aesthetic
+   Fonts: Cormorant Garamond (headings) + Outfit (body)
+   Import in index.html or main layout:
+   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+═══════════════════════════════════════════════════════════ */
+
+/* ── Variables ────────────────────────────────────────────── */
+:root {
+    --bg: #0c0b0f;
+    --surface: #131118;
+    --surface-2: #1a1823;
+    --border: rgba(255, 255, 255, 0.07);
+    --border-hover: rgba(255, 255, 255, 0.14);
+    --gold: #c9a96e;
+    --gold-light: #e2c898;
+    --gold-dim: rgba(201, 169, 110, 0.18);
+    --text-primary: #f2ede6;
+    --text-secondary: #9691a0;
+    --text-muted: #5a5666;
+    --error: #d97070;
+    --error-bg: rgba(217, 112, 112, 0.08);
+    --success: #6ec99a;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Outfit', system-ui, sans-serif;
+    --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Root / Page ──────────────────────────────────────────── */
+.ar-root {
+    position: relative;
+    min-height: 100vh;
+    background-color: var(--bg);
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    padding: 3rem 1.25rem 5rem;
+    overflow-x: hidden;
+}
+
+/* Ambient glow orbs */
+.ar-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.28;
+}
+
+.ar-orb--1 {
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle, #6b4c2a 0%, transparent 70%);
+    top: -140px;
+    right: -160px;
+}
+
+.ar-orb--2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #2a1f4a 0%, transparent 70%);
+    bottom: 80px;
+    left: -120px;
+}
+
+/* ── Container ────────────────────────────────────────────── */
+.ar-container {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.ar-header {
+    margin-bottom: 2.8rem;
+    animation: ar-fadeUp 0.5s ease both;
+}
+
+.ar-breadcrumb {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-body);
+}
+
+.ar-heading {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.5rem;
+}
+
+.ar-subheading {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ar-divider {
+    width: 48px;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    margin-top: 1.5rem;
+    border-radius: 2px;
+}
+
+/* ── Toast ────────────────────────────────────────────────── */
+.ar-toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-2);
+    border: 0.5px solid var(--success);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.1rem;
+    font-size: 13px;
+    color: var(--success);
+    margin-bottom: 1.5rem;
+    animation: ar-fadeUp 0.3s ease both;
+}
+
+.ar-toast__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+}
+
+/* ── Form ─────────────────────────────────────────────────── */
+.ar-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ── Section card ─────────────────────────────────────────── */
+.ar-section {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 2rem 2rem 2rem;
+    animation: ar-fadeUp 0.5s ease both;
+    transition: border-color var(--transition);
+}
+
+.ar-section:hover {
+    border-color: var(--border-hover);
+}
+
+.ar-section:nth-child(2) {
+    animation-delay: 0.07s;
+}
+
+.ar-section:nth-child(3) {
+    animation-delay: 0.14s;
+}
+
+.ar-section:nth-child(4) {
+    animation-delay: 0.21s;
+}
+
+.ar-section__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+    margin: 0 0 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ar-section__num {
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    background: var(--gold-dim);
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+/* ── Field ────────────────────────────────────────────────── */
+.ar-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.ar-field+.ar-field {
+    margin-top: 1.1rem;
+}
+
+.ar-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.1rem;
+}
+
+@media (max-width: 520px) {
+    .ar-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Label ────────────────────────────────────────────────── */
+.ar-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+}
+
+/* ── Input ────────────────────────────────────────────────── */
+.ar-input {
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 300;
+    padding: 0.7rem 1rem;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    width: 100%;
+}
+
+.ar-input::placeholder {
+    color: var(--text-muted);
+}
+
+.ar-input:hover {
+    border-color: var(--border-hover);
+}
+
+.ar-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12);
+}
+
+.ar-field--error .ar-input,
+.ar-field--error .ar-select,
+.ar-field--error .ar-price-wrap {
+    border-color: var(--error) !important;
+    background-color: var(--error-bg) !important;
+}
+
+/* ── Select ───────────────────────────────────────────────── */
+.ar-select-wrap {
+    position: relative;
+}
+
+.ar-select {
+    appearance: none;
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 300;
+    padding: 0.7rem 2.2rem 0.7rem 1rem;
+    outline: none;
+    width: 100%;
+    cursor: pointer;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.ar-select option {
+    background: #1a1823;
+    color: var(--text-primary);
+}
+
+.ar-select:hover {
+    border-color: var(--border-hover);
+}
+
+.ar-select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12);
+}
+
+.ar-select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* ── Price input ──────────────────────────────────────────── */
+.ar-price-wrap {
+    display: flex;
+    align-items: center;
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.ar-price-wrap:focus-within {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12);
+}
+
+.ar-currency {
+    font-size: 15px;
+    color: var(--text-muted);
+    padding: 0 0 0 1rem;
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-weight: 400;
+}
+
+.ar-input--price {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding-left: 0.4rem;
+    box-shadow: none !important;
+}
+
+.ar-input--price::-webkit-inner-spin-button,
+.ar-input--price::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+/* ── Error message ────────────────────────────────────────── */
+.ar-error {
+    font-size: 12px;
+    color: var(--error);
+    font-family: var(--font-body);
+    font-weight: 400;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ar-error::before {
+    content: "⚠";
+    font-size: 11px;
+}
+
+/* ── Toggle card ──────────────────────────────────────────── */
+.ar-toggle-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--surface-2);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.1rem 1.25rem;
+    transition: border-color var(--transition);
+}
+
+.ar-toggle-card:hover {
+    border-color: var(--border-hover);
+}
+
+.ar-toggle-info {
+    flex: 1;
+}
+
+.ar-toggle-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin: 0 0 3px;
+}
+
+.ar-toggle-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    margin: 0;
+}
+
+/* ── Toggle switch ────────────────────────────────────────── */
+.ar-switch {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.ar-switch__input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ar-switch__track {
+    width: 46px;
+    height: 24px;
+    border-radius: 24px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    position: relative;
+    transition: background var(--transition), border-color var(--transition);
+    display: block;
+}
+
+.ar-switch__thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform var(--transition), background var(--transition);
+    display: block;
+}
+
+.ar-switch__input:checked+.ar-switch__track {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+
+.ar-switch__input:checked+.ar-switch__track .ar-switch__thumb {
+    background: var(--gold);
+    transform: translateX(22px);
+}
+
+.ar-switch__label {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+/* ── Drop zone ────────────────────────────────────────────── */
+.ar-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: 3rem 1.5rem;
+    cursor: pointer;
+    text-align: center;
+    position: relative;
+    transition: border-color var(--transition), background var(--transition);
+}
+
+.ar-dropzone:hover,
+.ar-dropzone--active {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+}
+
+.ar-dropzone__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.ar-dropzone__icon {
+    color: var(--gold);
+    margin-bottom: 4px;
+    transition: transform var(--transition);
+}
+
+.ar-dropzone:hover .ar-dropzone__icon {
+    transform: translateY(-3px);
+}
+
+.ar-dropzone__title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.ar-dropzone__hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin: 0;
+}
+
+/* ── Preview grid ─────────────────────────────────────────── */
+.ar-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 1.25rem;
+}
+
+.ar-preview__thumb {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+    cursor: default;
+}
+
+.ar-preview__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.ar-preview__thumb:hover .ar-preview__img {
+    transform: scale(1.05);
+}
+
+.ar-preview__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(12, 11, 15, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.ar-preview__thumb:hover .ar-preview__overlay {
+    opacity: 1;
+}
+
+.ar-preview__remove {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(12, 11, 15, 0.85);
+    border: 0.5px solid var(--border);
+    color: var(--text-primary);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition), color var(--transition);
+}
+
+.ar-preview__remove:hover {
+    background: var(--error);
+    border-color: var(--error);
+}
+
+.ar-preview__badge {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--gold);
+    background: rgba(12, 11, 15, 0.75);
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(4px);
+}
+
+.ar-image-count {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin: 0.75rem 0 0;
+    text-align: right;
+}
+
+/* ── Actions ──────────────────────────────────────────────── */
+.ar-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 0.25rem;
+    animation: ar-fadeUp 0.5s 0.3s ease both;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.ar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    padding: 0.7rem 1.8rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    border: 0.5px solid transparent;
+    transition: all var(--transition);
+}
+
+.ar-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.ar-btn--ghost {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text-secondary);
+}
+
+.ar-btn--ghost:hover:not(:disabled) {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+}
+
+.ar-btn--primary {
+    background: linear-gradient(135deg, #b8935a 0%, #d4b06a 50%, #b8935a 100%);
+    background-size: 200% 200%;
+    background-position: left center;
+    border-color: transparent;
+    color: #0c0b0f;
+    font-weight: 500;
+    box-shadow: 0 2px 20px rgba(201, 169, 110, 0.2);
+}
+
+.ar-btn--primary:hover:not(:disabled) {
+    background-position: right center;
+    box-shadow: 0 4px 28px rgba(201, 169, 110, 0.35);
+    transform: translateY(-1px);
+}
+
+.ar-btn--primary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* ── Spinner ──────────────────────────────────────────────── */
+.ar-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(12, 11, 15, 0.3);
+    border-top-color: #0c0b0f;
+    border-radius: 50%;
+    animation: ar-spin 0.6s linear infinite;
+    flex-shrink: 0;
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes ar-fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ar-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .ar-heading {
+        font-size: 2.2rem;
+    }
+
+    .ar-section {
+        padding: 1.5rem;
+    }
+
+    .ar-actions {
+        flex-direction: column-reverse;
+    }
+
+    .ar-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ar-preview {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+}

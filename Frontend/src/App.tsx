@@ -6,6 +6,11 @@ import { LoginForm } from "./pages/LoginPage.tsx"
 import RegisterForm from "./pages/RegistartionPage.tsx"
 import { useAuth } from "./hooks/useAuth.ts"
 import { useEffect } from "react"
+import Rooms from "./pages/Rooms.tsx"
+import RoomDetail from "./pages/RoomDetail.tsx"
+import AboutUs from "./pages/AboutUs.tsx"
+import BookingCart from "./pages/BookingCart.tsx"
+import BookingPage from "./pages/BookNow.tsx"
 
 export function App() {
 
@@ -18,7 +23,18 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/rooms" element={<Rooms />} />
+        <Route path="/room/details/:id?" element={<RoomDetail />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/book-now" element={<BookingPage />} />
+
+
+        <Route path="/booking/cart" element={<BookingCart />} />
+
+
+
         <Route path="/login" element={<LoginForm />} />
+
         <Route path="/register" element={<RegisterForm />} />
 
         <Route path="*" element={<Page404/>}/>
