@@ -281,10 +281,6 @@ const Header = () => {
                       <li>
                         <Link to="/book-now">Book Now</Link>
                       </li>
-                      <li>
-                        <Link to={"/room/details"}>Room Details</Link>
-                      </li>
-                     
 
                     </ul>
                     <div className="position-relative d-inline-block text-white">

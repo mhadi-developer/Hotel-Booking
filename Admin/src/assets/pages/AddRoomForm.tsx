@@ -125,14 +125,14 @@ export default function AddRoom() {
 
     /* Simulate API call */
     try {
-      const response = await axiosInstance.post(`http://localhost:7004/api/admin/add/room`, formData,
+      const response = await axiosInstance.post(`${import.meta.env.VITE_API_BASE_URL}/admin/add/room`, formData,
       {
         headers: {
            "Content-Type":"multipart/form-data"
          }
        }
      )
-    if (response.statusText==="OK") {
+    if (response.status===200 || response.status===201) {
       toast.success("room added successfully");
        reset();
     setImages([]);

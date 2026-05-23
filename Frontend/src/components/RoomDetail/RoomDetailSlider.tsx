@@ -1,61 +1,59 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef } from "react";
+import type { room } from "../../types/schema/room";
 
-const RoomDetailsSlider = () => {
-  const sliderRef = useRef(null);
+type Props = {
+  roomDetails?: room;
+};
+
+const RoomDetailsSlider: React.FC<Props> = ({ roomDetails }) => {
+  const sliderRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const $ = (window as any).$;
+    if (!roomDetails?.images?.length) return;
 
-    if (!$) {
-      console.error("jQuery not loaded");
-      return;
-    }
+    const $ = (window as any).$ as any;
+    if (!$ || !sliderRef.current) return;
 
-    // 🔹 1) Apply set-bg (data-setbg → inline background)
-    const items = sliderRef.current?.querySelectorAll(".set-bg") || [];
+    const items =
+      sliderRef.current.querySelectorAll<HTMLDivElement>(".set-bg");
+
     items.forEach((el) => {
       const bg = el.getAttribute("data-setbg");
+
       if (bg) {
         el.style.backgroundImage = `url(${bg})`;
         el.style.backgroundSize = "cover";
         el.style.backgroundPosition = "center";
+        el.style.height = "500px";
       }
     });
 
-    // 🔹 2) Init Owl Carousel (guard + re-init safe)
-    if ($.fn && $.fn.owlCarousel && sliderRef.current) {
-      const $slider = $(sliderRef.current);
+    const $slider = $(sliderRef.current);
 
-      // destroy if already initialized (important on remount)
-      if ($slider.hasClass("owl-loaded")) {
-        $slider.trigger("destroy.owl.carousel");
-        $slider.removeClass("owl-loaded");
-        $slider.find(".owl-stage-outer").children().unwrap();
-      }
-
-      $slider.owlCarousel({
-        items: 1,
-        loop: true,
-        nav: true,
-        dots: false,
-        autoplay: true,
-        autoplayTimeout: 3000,
-        smartSpeed: 600,
-      });
-    } else {
-      console.error("Owl Carousel not loaded");
+    // optional safety if owl already initialized
+    if ($slider.hasClass("owl-loaded")) {
+      $slider.trigger("destroy.owl.carousel");
+      $slider.removeClass("owl-loaded");
+      $slider.find(".owl-stage-outer").children().unwrap();
     }
 
-    // 🔹 3) Cleanup on unmount
+    $slider.owlCarousel({
+      items: 1,
+      loop: true,
+      nav: true,
+      dots: false,
+      autoplay: true,
+      autoplayTimeout: 3000,
+      smartSpeed: 600,
+    });
+
     return () => {
-      if ($ && $.fn && $.fn.owlCarousel && sliderRef.current) {
-        const $slider = $(sliderRef.current);
-        if ($slider.hasClass("owl-loaded")) {
-          $slider.trigger("destroy.owl.carousel");
-        }
+      if ($slider.hasClass("owl-loaded")) {
+        $slider.trigger("destroy.owl.carousel");
       }
     };
-  }, []);
+  }, [roomDetails?.images]);
 
   return (
     <div className="room-details-slider">
@@ -64,25 +62,13 @@ const RoomDetailsSlider = () => {
           ref={sliderRef}
           className="room__details__pic__slider owl-carousel"
         >
-          <div
-            className="room__details__pic__slider__item set-bg"
-            data-setbg="/assets/img/rooms/details/rd-1.jpg"
-          ></div>
-
-          <div
-            className="room__details__pic__slider__item set-bg"
-            data-setbg="/assets/img/rooms/details/rd-2.jpg"
-          ></div>
-
-          <div
-            className="room__details__pic__slider__item set-bg"
-            data-setbg="/assets/img/rooms/details/rd-3.jpg"
-          ></div>
-
-          <div
-            className="room__details__pic__slider__item set-bg"
-            data-setbg="/assets/img/rooms/details/rd-4.jpg"
-          ></div>
+          {roomDetails?.images?.map((image, index) => (
+            <div
+              key={image?.id ?? index}
+              className="room__details__pic__slider__item set-bg"
+              data-setbg={image?.secure_url}
+            />
+          ))}
         </div>
       </div>
     </div>

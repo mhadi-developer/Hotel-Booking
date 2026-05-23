@@ -1,76 +1,51 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-import type {room} from "../../types/schema/room"
+import type { room } from "../../types/schema/room";
+
 import "swiper/css";
 import "swiper/css/pagination";
-import { useEffect, useState } from "react";
+
+import { useEffect, useMemo, useState } from "react";
+
 import axiosInstance from "../../resources/axios.Instance.create";
+import { Link } from "react-router";
 
 const RoomSelection = () => {
   const [rooms, setRooms] = useState<room[]>([]);
 
-  
-
-  
-  
+  // FETCH ROOMS
   useEffect(() => {
-    try {
-      const fetchedRooms = async () => {
-        const response = await axiosInstance.get(`${import.meta.env.VITE_BACKEND_URL}/get/rooms`,
+    const fetchedRooms = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${import.meta.env.VITE_BACKEND_URL}/get/rooms`
         );
+
         setRooms(response?.data?.fetchedRooms);
+      } catch (error) {
+        console.log(error);
       }
-    
-      fetchedRooms();
-      
-      
-    }
-    catch (error) {
-      console.log(error);
-    }
+    };
+
+    fetchedRooms();
   }, []);
 
-  console.log({ rooms });
- 
-
-  
-
-
-  
- 
-
-  return (
-    <section className="rooms spad">
-      <div className="container">
-        <div className="row">
-
-          {/* Room 1 Images */}
-
-
-          {
-  rooms?.map((room) => (
-
-    <div
-      className="row"
-      key={room.id}
-    >
-
-      {/* IMAGE SECTION */}
-      <div className="col-lg-6 p-0 order-lg-2 order-md-2 col-md-6">
-
-        <Swiper
-          modules={[Autoplay, Pagination]}
-          autoplay={{ delay: 3000 }}
-          pagination={{ clickable: true }}
-          loop={true}
-          className="room__pic__slider"
-        >
-
-          {
-            room?.images?.map((img, index) => (
-
+  // MEMOIZED ROOM JSX
+  const renderedRooms = useMemo(() => {
+    return rooms?.map((room) => (
+      <div className="row" key={room.id}>
+        
+        {/* IMAGE SECTION */}
+        <div className="col-lg-6 p-0 order-lg-2 order-md-2 col-md-6">
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            autoplay={{ delay: 3000 }}
+            pagination={{ clickable: true }}
+            loop={true}
+            className="room__pic__slider"
+          >
+            {room?.images?.map((img, index) => (
               <SwiperSlide key={index}>
-
                 <div
                   className="room__pic__item"
                   style={{
@@ -81,72 +56,66 @@ const RoomSelection = () => {
                     backgroundRepeat: "no-repeat",
                   }}
                 />
-
               </SwiperSlide>
-
-            ))
-          }
-
-        </Swiper>
-
-      </div>
-
-      {/* TEXT SECTION */}
-      <div className="col-lg-6 p-0 order-lg-1 order-md-1 col-md-6">
-
-        <div className="room__text">
-
-          <h3>{room?.name}</h3>
-
-          <h2>
-            <sup>$</sup>
-            {room?.price}
-            <span>/day</span>
-          </h2>
-
-          <ul>
-
-            <li>
-              <span>Size:</span>
-              30 ft
-            </li>
-
-            <li>
-              <span>Capacity:</span>
-              Max person 3
-            </li>
-
-            <li>
-              <span>Bed:</span>
-              King Beds
-            </li>
-
-            <li>
-              <span>Services:</span>
-              Wifi, Television, Bathroom
-            </li>
-
-            <li>
-              <span>View:</span>
-              Sea View
-            </li>
-
-          </ul>
-
-          <a href="/">View Details</a>
-
+            ))}
+          </Swiper>
         </div>
 
+        {/* TEXT SECTION */}
+        <div className="col-lg-6 p-0 order-lg-1 order-md-1 col-md-6">
+          <div className="room__text">
+            <h3>{room?.name}</h3>
+
+            <h2>
+              <sup>$</sup>
+              {room?.price}
+              <span>/day</span>
+            </h2>
+
+            <ul>
+              <li>
+                <span>Size:</span>
+                30 ft
+              </li>
+
+              <li>
+                <span>Capacity:</span>
+                Max person 3
+              </li>
+
+              <li>
+                <span>Bed:</span>
+                King Beds
+              </li>
+
+              <li>
+                <span>Services:</span>
+                Wifi, Television, Bathroom
+              </li>
+
+              <li>
+                <span>View:</span>
+                Sea View
+              </li>
+            </ul>
+
+            <Link to={`/room/details/${room?.id}`}>
+              View Details
+            </Link>
+          </div>
+        </div>
       </div>
+    ));
+  }, [rooms]);
 
-    </div>
+  return (
+    <section className="rooms spad">
+      <div className="container">
+        <div className="row">
 
-  ))
-}
+          {renderedRooms}
 
-          {/* Room 1 Text */}
-          
-   </div>
+        </div>
 
         {/* Pagination */}
         <div className="row">

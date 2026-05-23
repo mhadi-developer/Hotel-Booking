@@ -1,4 +1,10 @@
-const RoomDescription = () => {
+import type { room } from "../../types/schema/room";
+
+type Prop = {
+ roomDetails?:room
+}
+
+const RoomDescription: React.FC<Prop> = ({roomDetails}) => {
   return (
     <section className="room-details spad">
       <div className="container">
@@ -40,8 +46,11 @@ const RoomDescription = () => {
               </div>
 
               {/* Title */}
-              <div className="room__details__title">
-                <h2>Premium King Room</h2>
+              
+                
+              
+                 <div className="room__details__title">
+                  <h2>{roomDetails?.name }</h2>
 
                 <a href="/" className="primary-btn">
                   Booking Now
@@ -95,7 +104,7 @@ const RoomDescription = () => {
 
                           <li>
                             <span className="icon_check"></span>
-                            Esthetic Salon
+                            {roomDetails?.type}
                           </li>
 
                           <li>
@@ -256,6 +265,10 @@ const RoomDescription = () => {
                   </div>
                 </div>
 
+              
+
+
+              
               </div>
             </div>
           </div>
