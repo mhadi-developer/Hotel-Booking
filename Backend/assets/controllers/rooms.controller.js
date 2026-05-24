@@ -69,4 +69,29 @@ export const getRoomDetailById = async (req, res) => {
     }
 }
 
+// ***************************************************
+
+export const getLatestRooms = async (req, res) => {
+    try {
+        const fetchedLatestRooms = await prisma.Room.findMany({
+            take: 4,
+            include: {
+                images: true
+            }
+        });
+
+        res.status(200).json({
+            message: "LATEST ROOMS FETCHED ",
+            success: true,
+            fetchedLatestRooms
+        })
+    } catch (error) {
+        console.log(error);
+        
+        res.status(500).json({
+            message: error?.message || "Something went wrong",
+            success: fasle
+        })
+    }
+}
 

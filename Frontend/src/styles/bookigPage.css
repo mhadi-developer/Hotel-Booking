@@ -1,0 +1,706 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+    --gold: #c9a84c;
+    --gold-light: #e8d49a;
+    --gold-dark: #8b6914;
+    --cream: #faf8f3;
+    --ink: #1a1612;
+    --ink-soft: #3d3530;
+    --muted: #8c8078;
+    --border: #e4ddd2;
+    --surface: #ffffff;
+    --surface-warm: #f5f0e8;
+    --error: #c0392b;
+    --error-bg: #fdf3f2;
+}
+
+body {
+    background: var(--cream);
+    margin: 0;
+}
+
+/* ── Page Shell ── */
+.hotel-page {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background: var(--cream);
+    color: var(--ink);
+}
+
+/* ── Nav ── */
+.hotel-nav {
+    background: var(--ink);
+    padding: 0.85rem 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: #fff;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+}
+
+.nav-brand span {
+    color: var(--gold);
+    font-style: italic;
+}
+
+.btn-nav-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    border-radius: 2px;
+    color: var(--gold-light);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    padding: 0.45rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-nav-home:hover {
+    background: rgba(201, 168, 76, 0.1);
+    color: var(--gold);
+}
+
+/* Nav badge */
+.nav-badge {
+    background: var(--gold);
+    color: var(--ink);
+    border-radius: 2px;
+    padding: 0 5px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+/* Logged-in user pill in nav */
+.user-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem 0.3rem 0.3rem;
+    font-size: 0.75rem;
+    color: #d6cfc6;
+    letter-spacing: 0.02em;
+}
+
+.user-pill-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Hero ── */
+.hotel-hero {
+    background: var(--ink);
+    padding: 3.5rem 0 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hotel-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(201, 168, 76, 0.18) 0%, transparent 65%);
+    pointer-events: none;
+}
+
+.hero-eyebrow {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+}
+
+.hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 300;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+}
+
+.hero-title span {
+    color: var(--gold);
+    font-style: italic;
+    font-weight: 400;
+}
+
+.hero-sub {
+    color: #a09488;
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.gold-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.5;
+}
+
+/* ── Tabs ── */
+.booking-tabs {
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+}
+
+.booking-tabs .nav-link {
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1rem 2rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: none;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.booking-tabs .nav-link:hover {
+    color: var(--ink);
+}
+
+.booking-tabs .nav-link.active {
+    color: var(--gold-dark);
+    border-bottom-color: var(--gold);
+}
+
+/* ── Cards ── */
+.booking-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    box-shadow: 0 4px 32px rgba(26, 22, 18, 0.06);
+}
+
+/* ── Guest identity banner (inside the form) ── */
+.guest-info-banner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--surface-warm);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 2px;
+    padding: 0.9rem 1.1rem;
+}
+
+.guest-info-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.guest-info-name {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.guest-info-email {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+.guest-info-badge {
+    margin-left: auto;
+    background: rgba(201, 168, 76, 0.12);
+    color: var(--gold-dark);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 2px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25em 0.7em;
+    white-space: nowrap;
+}
+
+/* ── Form fields ── */
+.field-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.45rem;
+    display: block;
+}
+
+.form-control,
+.form-select {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0.7rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--ink);
+    background: var(--cream);
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
+    background: #fff;
+    outline: none;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--error);
+    background-color: var(--error-bg);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.1);
+}
+
+.field-error {
+    font-size: 0.72rem;
+    color: var(--error);
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* ── Rooms status ── */
+.rooms-status {
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rooms-status.error {
+    color: var(--error);
+}
+
+.rooms-status.error button {
+    background: none;
+    border: none;
+    color: var(--gold-dark);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.8rem;
+}
+
+.rooms-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    display: inline-block;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Guest Counter ── */
+.guest-counter {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    width: fit-content;
+    background: var(--cream);
+}
+
+.guest-counter.invalid {
+    border-color: var(--error);
+    background: var(--error-bg);
+}
+
+.guest-counter button {
+    width: 40px;
+    height: 42px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.guest-counter button:hover {
+    background: var(--surface-warm);
+}
+
+.guest-counter span {
+    width: 52px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Price Summary ── */
+.price-summary {
+    background: var(--ink);
+    border-radius: 2px;
+    padding: 1.5rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.price-summary::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.15), transparent 70%);
+    pointer-events: none;
+}
+
+.price-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #a09488;
+}
+
+.price-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    color: var(--gold);
+}
+
+.price-per {
+    font-size: 0.8rem;
+    color: #6b6058;
+}
+
+/* ── Buttons ── */
+.btn-book {
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.9rem 2.5rem;
+    width: 100%;
+    transition: background 0.2s, transform 0.15s;
+    cursor: pointer;
+}
+
+.btn-book:hover:not(:disabled) {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+}
+
+.btn-book:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.btn-book.success-state {
+    background: #2d6a4f;
+    color: #fff;
+}
+
+.btn-outline-gold {
+    background: none;
+    color: var(--gold-dark);
+    border: 1px solid var(--gold);
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.85rem 2rem;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.btn-outline-gold:hover {
+    background: rgba(201, 168, 76, 0.08);
+    transform: translateY(-1px);
+}
+
+.btn-home-cta {
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 1rem 2.8rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-block;
+}
+
+.btn-home-cta:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+}
+
+/* ── Home Feature Cards ── */
+.home-feature-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.home-feature-card:hover {
+    box-shadow: 0 8px 32px rgba(26, 22, 18, 0.08);
+    transform: translateY(-2px);
+}
+
+.home-feature-icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.home-feature-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+}
+
+.home-feature-text {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Checkout ── */
+.checkout-section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.checkout-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.checkout-line:last-child {
+    border-bottom: none;
+}
+
+.checkout-line-label {
+    color: var(--muted);
+}
+
+.checkout-line-value {
+    color: var(--ink);
+    font-weight: 500;
+}
+
+.checkout-total-label {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.9rem;
+}
+
+.checkout-total-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--gold-dark);
+}
+
+.checkout-confirm-box {
+    background: var(--ink);
+    border-radius: 2px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.checkout-confirm-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201, 168, 76, 0.2), transparent 70%);
+    pointer-events: none;
+}
+
+/* ── Booking List Rows ── */
+.booking-row {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: #fff;
+    transition: box-shadow 0.2s, transform 0.2s;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.booking-row:hover {
+    box-shadow: 0 6px 24px rgba(26, 22, 18, 0.08);
+    transform: translateY(-1px);
+}
+
+.booking-id {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+}
+
+.booking-room {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.booking-meta {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.booking-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--gold-dark);
+}
+
+.badge-status {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.35em 0.8em;
+    border-radius: 2px;
+}
+
+/* ── Misc ── */
+.section-head {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--ink);
+}
+
+.ornament {
+    color: var(--gold);
+    opacity: 0.5;
+    font-size: 1.2rem;
+}
+
+.form-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.8rem 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--muted);
+}
+
+.empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+/* ── Animation ── */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeSlideIn 0.35s ease both;
+}

@@ -1,6 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../../resources/axios.Instance.create";
+import type { room } from "../../types/schema/room";
+import { Link } from "react-router-dom";
 
 const HomeRoom = () => {
+  const [latestRooms, setLatestRooms] = useState<room[]>([]);
+  useEffect(() => {
+    const fetchedLatestRoom = async () => {
+      const response = await axiosInstance.get(`${import.meta.env.VITE_BACKEND_URL}/get/rooms/latest`);
+      if (response.status === 200 || response?.data) {
+        setLatestRooms(response?.data?.fetchedLatestRooms);
+      }
+    }
+    fetchedLatestRoom();
+   },[])
+
+
   return (
     <section className="home-room spad py-5 my-3">
 
@@ -20,65 +35,55 @@ const HomeRoom = () => {
       <div className="container-fluid">
         <div className="row">
 
-          <div className="col-lg-3 col-md-6 col-sm-6 p-0">
-            <div
-              className="home__room__item set-bg"
-              data-setbg="/assets/img/home-room/hr-1.jpg"
-            >
-              <div className="home__room__title">
-                <h4>Deluxe Room</h4>
-                <h2>
-                  <sup>$</sup>55<span>/day</span>
-                </h2>
-              </div>
-              <a href="#">Booking Now</a>
-            </div>
+          {
+  latestRooms.length > 0 ? (
+
+    latestRooms.map((room) => (
+
+      <div
+        className="col-lg-3 col-md-6 col-sm-6 p-0"
+        key={room.id}
+      >
+
+        <div
+          className="home__room__item"
+          style={{
+            backgroundImage: `url(${room?.images?.[0]?.secure_url})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            height: "500px",
+          }}
+        >
+
+          <div className="home__room__title">
+
+            <h4>{room?.name}</h4>
+
+            <h2>
+              <sup>$</sup>
+              {room?.price}
+              <span>/day</span>
+            </h2>
+
           </div>
 
-          <div className="col-lg-3 col-md-6 col-sm-6 p-0">
-            <div
-              className="home__room__item set-bg"
-              data-setbg="/assets/img/home-room/hr-2.jpg"
-            >
-              <div className="home__room__title">
-                <h4>Deluxe Room</h4>
-                <h2>
-                  <sup>$</sup>85<span>/day</span>
-                </h2>
-              </div>
-              <a href="#">Booking Now</a>
-            </div>
-          </div>
+          <Link to={`/room/details/${room?.id}`}>View Details</Link>
 
-          <div className="col-lg-3 col-md-6 col-sm-6 p-0">
-            <div
-              className="home__room__item set-bg"
-              data-setbg="/assets/img/home-room/hr-3.jpg"
-            >
-              <div className="home__room__title">
-                <h4>Deluxe Room</h4>
-                <h2>
-                  <sup>$</sup>94<span>/day</span>
-                </h2>
-              </div>
-              <a href="#">Booking Now</a>
-            </div>
-          </div>
+        </div>
 
-          <div className="col-lg-3 col-md-6 col-sm-6 p-0">
-            <div
-              className="home__room__item set-bg"
-              data-setbg="/assets/img/home-room/hr-4.jpg"
-            >
-              <div className="home__room__title">
-                <h4>Deluxe Room</h4>
-                <h2>
-                  <sup>$</sup>71<span>/day</span>
-                </h2>
-              </div>
-              <a href="#">Booking Now</a>
-            </div>
-          </div>
+      </div>
+    ))
+
+  ) : (
+
+    <div className="col-md-12 text-center text-muted">
+      <p>No Latest Rooms</p>
+    </div>
+
+  )
+}
+         
 
         </div>
       </div>
