@@ -1,38 +1,22 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
-import type { room } from "../../types/schema/room";
 
 import "swiper/css";
 import "swiper/css/pagination";
 
-import { useEffect, useMemo, useState } from "react";
+import {  useMemo } from "react";
 
-import axiosInstance from "../../resources/axios.Instance.create";
+
 import { Link } from "react-router";
+import { useRooms } from "../../hooks/useRooms";
 
 const RoomSelection = () => {
-  const [rooms, setRooms] = useState<room[]>([]);
+  const {fetchedRooms} = useRooms()
 
-  // FETCH ROOMS
-  useEffect(() => {
-    const fetchedRooms = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `${import.meta.env.VITE_BACKEND_URL}/get/rooms`
-        );
-
-        setRooms(response?.data?.fetchedRooms);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchedRooms();
-  }, []);
-
+  
   // MEMOIZED ROOM JSX
   const renderedRooms = useMemo(() => {
-    return rooms?.map((room) => (
+    return fetchedRooms?.map((room) => (
       <div className="row" key={room.id}>
         
         {/* IMAGE SECTION */}
@@ -106,10 +90,10 @@ const RoomSelection = () => {
         </div>
       </div>
     ));
-  }, [rooms]);
+  }, [fetchedRooms]);
 
   return (
-    <section className="rooms spad">
+    <section className="fetchedRooms spad">
       <div className="container">
         <div className="row">
 

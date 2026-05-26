@@ -16,7 +16,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
     getLoggedInUser: async () => {
         try {
             const response = await axiosInstance.get("/login/get")
-            console.log('*************',response);
             
             set({
                 loggedInUser: response?.data?.user,

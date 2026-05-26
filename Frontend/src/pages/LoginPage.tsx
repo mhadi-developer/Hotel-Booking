@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Link } from "react-router";
 import axiosInstance from "../resources/axios.Instance.create";
 import { Bounce, ToastContainer , toast } from "react-toastify";
+import { useState } from "react";
 
  const loginSchema = z.object({
   email: z
@@ -24,6 +25,7 @@ import { Bounce, ToastContainer , toast } from "react-toastify";
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
+  const [error, setError] = useState<string>()
 
   const {
     register,
@@ -37,18 +39,36 @@ export const LoginForm = () => {
       rememberMe: false,
     },
   });
+const onSubmit = async (data: LoginFormData) => {
+  try {
+    const response = await axiosInstance.post(
+      "/login",
+      data
+    );
 
-  const onSubmit = async (data: LoginFormData) => {
-    console.log("Login Data:", data);
+    if (
+      response.status === 200 ||
+      response.status === 201
+    ) {
+      toast.success(
+        "Login successfully redirecting..."
+      );
 
-    const response = await axiosInstance.post("/login",  data );
-    if (response.statusText) {
-      toast.success("login successsfully redirecting....");
-      window.location.href = ('/');
-      
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
     }
-    
-  };
+
+  } catch (error: any) {
+
+    const message =
+      error?.response?.data?.message ||
+      "Something went wrong";
+
+
+    toast.error(message);
+  }
+};
 
   return (
     <div

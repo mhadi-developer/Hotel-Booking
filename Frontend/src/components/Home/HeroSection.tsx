@@ -1,7 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
 
+import { useRooms } from "../../hooks/useRooms";
+
 const HeroSection = () => {
+  
+  const { fetchedRooms } = useRooms();
+  
+
+
+
+  console.log(">>>>>>>>>>>>>>>>>>",fetchedRooms);
+  
 
   useEffect(() => {
     const $ = (window as any).$;

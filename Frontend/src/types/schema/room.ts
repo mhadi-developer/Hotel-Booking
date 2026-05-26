@@ -13,6 +13,8 @@ export type room = {
     type: string,
     cretedAt: string
     updatedAt: string,
-    images:[image]
+    images: [image],
+    capacity?: number | string,
+    description?:string
 
 }

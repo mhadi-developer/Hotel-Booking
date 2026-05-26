@@ -8,11 +8,6 @@ export const getAllRooms = async (req, res) => {
           }
       });
       
-      
-
-      
-      
-      
       res.status(200).json({
           message: "All rooms fetched Successfully",
           success: true,

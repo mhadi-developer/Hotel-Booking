@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "../styles/bookigPage.css";
 import { useAuth } from "../hooks/useAuth";
-import axiosInstance from "../resources/axios.Instance.create";
+import { useRooms } from "../hooks/useRooms";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
@@ -138,11 +138,11 @@ function calcNights(
 }
 
 function calcTotal(
-  rooms: Room[],
+  fetchedRooms: Room[],
   roomId: string,
   nights: number
 ): number {
-  const room = rooms.find((r) => r.id === roomId);
+  const room = fetchedRooms.find((r) => r.id === roomId);
 
   return room ? room.price * nights : 0;
 }
@@ -161,14 +161,6 @@ export default function HotelBookingPage() {
   const [view, setView] =
     useState<AppView>("home");
 
-  const [rooms, setRooms] = useState<Room[]>([]);
-
-  const [roomsLoading, setRoomsLoading] =
-    useState(true);
-
-  const [roomsError, setRoomsError] =
-    useState<string | null>(null);
-
   const [bookings, setBookings] = useState<
     SavedBooking[]
   >([]);
@@ -186,43 +178,8 @@ export default function HotelBookingPage() {
   // ───────────────────────────────────────────────────────────
   // FETCH ROOMS
   // ───────────────────────────────────────────────────────────
-
-  useEffect(() => {
-    (async () => {
-      try {
-        setRoomsLoading(true);
-
-        setRoomsError(null);
-
-        const res = await axiosInstance.get(
-          `${import.meta.env.VITE_BACKEND_URL}/get/rooms`
-        );
-
-        if (res.status !== 200) {
-          throw new Error("Failed to fetch rooms");
-        }
-
-        const fetchedRooms =
-          res.data.fetchedRooms;
-
-        console.log(
-          "FETCHED ROOMS =>",
-          fetchedRooms
-        );
-
-        setRooms(fetchedRooms);
-
-      } catch (err) {
-        console.log(err);
-
-        setRoomsError(
-          (err as Error).message
-        );
-      } finally {
-        setRoomsLoading(false);
-      }
-    })();
-  }, []);
+  const { fetchedRooms, loading , error } = useRooms();
+  
 
   // ───────────────────────────────────────────────────────────
   // REACT HOOK FORM
@@ -261,13 +218,13 @@ export default function HotelBookingPage() {
   const estimatedTotal =
     watchedValues.roomId && nights > 0
       ? calcTotal(
-          rooms,
+          fetchedRooms,
           watchedValues.roomId,
           nights
         )
       : 0;
 
-  const selectedRoom = rooms.find(
+  const selectedRoom = fetchedRooms?.find(
     (r) => r.id === watchedValues.roomId
   );
 
@@ -369,7 +326,7 @@ export default function HotelBookingPage() {
                   </p>
 
                   <p className="guest-info-email">
-                    {loggedInUser.email}
+                    {loggedInUser?.email}
                   </p>
                 </div>
 
@@ -392,7 +349,7 @@ export default function HotelBookingPage() {
             </h1>
 
             <p className="hero-sub">
-              Luxury rooms with premium comfort.
+              Luxury fetchedRooms with premium comfort.
             </p>
 
             <button type="button"
@@ -413,24 +370,26 @@ export default function HotelBookingPage() {
             </h2>
           </div>
 
-          {roomsLoading && (
+          {loading && (
             <div className="text-center">
-              Loading rooms...
+              Loading fetchedRooms...
             </div>
           )}
 
-          {roomsError && (
-            <div className="text-danger text-center">
-              {roomsError}
-            </div>
-          )}
+          {
+            error && (
+              <div className="text-center">
+                 Error {error}
+              </div>
+            )
+          }
 
-          {!roomsLoading &&
-            !roomsError &&
-            rooms.length > 0 && (
+      
+          {!loading && ! error &&
+            fetchedRooms.length > 0 && (
               <div className="row g-4">
 
-                {rooms.map((room) => (
+                {fetchedRooms.map((room) => (
                   <div
                     className="col-md-4"
                     key={room.id}
@@ -439,11 +398,11 @@ export default function HotelBookingPage() {
 
                       {/* ROOM IMAGE */}
                       {room.images?.[0]
-                        ?.imageUrl && (
+                        ?.secure_url && (
                         <img
                           src={
                             room.images[0]
-                              .imageUrl
+                              .secure_url
                           }
                           alt={room.name}
                           style={{
@@ -568,13 +527,13 @@ export default function HotelBookingPage() {
                   Select Room
                 </option>
 
-                {rooms.map((room) => (
+                {fetchedRooms.map((room) => (
                   <option
-                    key={room.id}
-                    value={room.id}
+                    key={room?.id}
+                    value={room?.id}
                   >
-                    {room.name} - $
-                    {room.price}
+                    {room?.name} - $
+                    {room?.price}
                   </option>
                 ))}
               </select>
