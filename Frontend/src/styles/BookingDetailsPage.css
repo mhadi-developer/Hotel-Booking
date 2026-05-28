@@ -1,0 +1,355 @@
+ 
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap');
+
+        :root {
+          --gm-bg:           #090d16;
+          --gm-surface:      rgba(255,255,255,0.025);
+          --gm-surface-2:    rgba(255,255,255,0.04);
+          --gm-border:       rgba(192,155,83,0.18);
+          --gm-border-soft:  rgba(255,255,255,0.06);
+          --gm-gold:         #c09b53;
+          --gm-gold-dim:     rgba(192,155,83,0.35);
+          --gm-cream:        #f0ead8;
+          --gm-cream-dim:    rgba(240,234,216,0.5);
+          --gm-cream-faint:  rgba(240,234,216,0.14);
+          --gm-font-d:       'Cormorant Garamond', serif;
+          --gm-font-b:       'Jost', sans-serif;
+        }
+
+        /* ── Page ─────────────────────────────────────────── */
+        .bd-page {
+          min-height: 100vh;
+          background-color: var(--gm-bg);
+          background-image:
+            radial-gradient(ellipse 80% 50% at 50% -5%, rgba(192,155,83,0.08) 0%, transparent 65%),
+            radial-gradient(ellipse 30% 40% at 95% 95%, rgba(192,155,83,0.04) 0%, transparent 55%);
+          font-family: var(--gm-font-b);
+          padding-bottom: 6rem;
+        }
+
+        /* ── Back button ──────────────────────────────────── */
+        .bd-back {
+          display: inline-flex; align-items: center; gap: 0.5rem;
+          background: transparent; border: none;
+          color: var(--gm-gold-dim);
+          font-family: var(--gm-font-b);
+          font-size: 0.65rem; font-weight: 500;
+          letter-spacing: 0.18em; text-transform: uppercase;
+          cursor: pointer; padding: 0;
+          transition: color 0.2s;
+          margin-bottom: 2.5rem;
+        }
+        .bd-back:hover { color: var(--gm-gold); }
+        .bd-back-arrow {
+          font-size: 0.9rem; transition: transform 0.2s;
+        }
+        .bd-back:hover .bd-back-arrow { transform: translateX(-3px); }
+
+        /* ── Hero section ─────────────────────────────────── */
+        .bd-hero {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 2rem;
+          padding-bottom: 2rem;
+          margin-bottom: 2.5rem;
+          border-bottom: 1px solid var(--gm-border-soft);
+          flex-wrap: wrap;
+          opacity: 0; transform: translateY(16px);
+          transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .bd-hero.visible { opacity: 1; transform: translateY(0); }
+
+        .bd-eyebrow {
+          font-size: 0.6rem; font-weight: 500;
+          letter-spacing: 0.28em; text-transform: uppercase;
+          color: var(--gm-gold); margin-bottom: 0.6rem;
+        }
+        .bd-room-name {
+          font-family: var(--gm-font-d);
+          font-size: clamp(2rem, 5vw, 3.2rem);
+          font-weight: 300; color: var(--gm-cream);
+          line-height: 1.05; margin: 0;
+        }
+        .bd-room-name em { font-style: italic; color: var(--gm-gold); }
+
+        .bd-hero-right { text-align: right; flex-shrink: 0; }
+        .bd-total-label {
+          font-size: 0.6rem; letter-spacing: 0.22em;
+          text-transform: uppercase; color: var(--gm-cream-dim);
+          margin-bottom: 0.3rem;
+        }
+        .bd-total-amount {
+          font-family: var(--gm-font-d);
+          font-size: 3rem; font-weight: 300;
+          color: var(--gm-gold); line-height: 1;
+        }
+        .bd-total-nights {
+          font-size: 0.7rem; font-weight: 300;
+          color: var(--gm-cream-faint); letter-spacing: 0.06em;
+          margin-top: 0.25rem;
+        }
+
+        /* ── Status banner ────────────────────────────────── */
+        .bd-status-banner {
+          display: flex; align-items: center; gap: 1rem;
+          padding: 1rem 1.5rem;
+          border: 1px solid;
+          border-radius: 2px;
+          margin-bottom: 2.5rem;
+          opacity: 0; transform: translateY(12px);
+          transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s;
+        }
+        .bd-status-banner.visible { opacity: 1; transform: translateY(0); }
+
+        .bd-status-dot {
+          width: 8px; height: 8px; border-radius: 50%;
+          flex-shrink: 0;
+          animation: bd-pulse 2.5s ease-in-out infinite;
+        }
+        @keyframes bd-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .bd-status-text {
+          font-size: 0.68rem; font-weight: 500;
+          letter-spacing: 0.18em; text-transform: uppercase;
+        }
+        .bd-status-desc {
+          font-size: 0.75rem; font-weight: 300;
+          color: var(--gm-cream-dim); margin-left: auto;
+          letter-spacing: 0.03em;
+        }
+
+        /* ── Content grid ─────────────────────────────────── */
+        .bd-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1px;
+          background: var(--gm-border-soft);
+          border: 1px solid var(--gm-border-soft);
+          border-radius: 2px;
+          overflow: hidden;
+          margin-bottom: 1.5rem;
+          opacity: 0; transform: translateY(12px);
+          transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+        }
+        .bd-grid.visible { opacity: 1; transform: translateY(0); }
+        .bd-grid.full { grid-template-columns: 1fr; }
+
+        .bd-cell {
+          background: var(--gm-surface);
+          padding: 1.75rem 2rem;
+          position: relative;
+          transition: background 0.2s;
+        }
+        .bd-cell:hover { background: var(--gm-surface-2); }
+
+        .bd-cell-label {
+          font-size: 0.56rem; font-weight: 500;
+          letter-spacing: 0.22em; text-transform: uppercase;
+          color: var(--gm-gold-dim); margin-bottom: 0.6rem;
+        }
+        .bd-cell-value {
+          font-family: var(--gm-font-d);
+          font-size: 1.25rem; font-weight: 300;
+          color: var(--gm-cream); line-height: 1.2;
+        }
+        .bd-cell-sub {
+          font-size: 0.7rem; font-weight: 300;
+          color: var(--gm-cream-faint); letter-spacing: 0.04em;
+          margin-top: 0.3rem;
+        }
+
+        /* ── Dates strip ──────────────────────────────────── */
+        .bd-dates-strip {
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          gap: 1.5rem;
+          padding: 2rem 2.5rem;
+          background: var(--gm-surface);
+          border: 1px solid var(--gm-border-soft);
+          border-radius: 2px;
+          margin-bottom: 1.5rem;
+          opacity: 0; transform: translateY(12px);
+          transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+        }
+        .bd-dates-strip.visible { opacity: 1; transform: translateY(0); }
+
+        .bd-date-block { }
+        .bd-date-block.right { text-align: right; }
+        .bd-date-tag {
+          font-size: 0.58rem; font-weight: 500;
+          letter-spacing: 0.22em; text-transform: uppercase;
+          color: var(--gm-gold-dim); margin-bottom: 0.4rem;
+        }
+        .bd-date-main {
+          font-family: var(--gm-font-d);
+          font-size: 1.4rem; font-weight: 300;
+          color: var(--gm-cream); line-height: 1.1;
+        }
+        .bd-date-day {
+          font-size: 0.72rem; font-weight: 300;
+          color: var(--gm-cream-faint); letter-spacing: 0.04em;
+          margin-top: 0.2rem;
+        }
+
+        .bd-dates-divider {
+          display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+        }
+        .bd-nights-count {
+          font-family: var(--gm-font-d);
+          font-size: 2rem; font-weight: 300;
+          color: var(--gm-gold); line-height: 1;
+        }
+        .bd-nights-label {
+          font-size: 0.58rem; font-weight: 500;
+          letter-spacing: 0.2em; text-transform: uppercase;
+          color: var(--gm-gold-dim);
+        }
+        .bd-dates-line {
+          width: 1px; height: 30px;
+          background: linear-gradient(180deg, transparent, var(--gm-gold-dim), transparent);
+        }
+
+        /* ── Pricing breakdown ────────────────────────────── */
+        .bd-pricing {
+          background: var(--gm-surface);
+          border: 1px solid var(--gm-border-soft);
+          border-radius: 2px;
+          padding: 1.75rem 2rem;
+          margin-bottom: 1.5rem;
+          opacity: 0; transform: translateY(12px);
+          transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
+        }
+        .bd-pricing.visible { opacity: 1; transform: translateY(0); }
+
+        .bd-pricing-title {
+          font-size: 0.6rem; font-weight: 500;
+          letter-spacing: 0.22em; text-transform: uppercase;
+          color: var(--gm-gold-dim); margin-bottom: 1.25rem;
+        }
+        .bd-pricing-row {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 0.6rem 0;
+          border-bottom: 1px solid var(--gm-border-soft);
+        }
+        .bd-pricing-row:last-child { border-bottom: none; }
+        .bd-pricing-key {
+          font-size: 0.78rem; font-weight: 300;
+          color: var(--gm-cream-dim); letter-spacing: 0.04em;
+        }
+        .bd-pricing-val {
+          font-size: 0.85rem; font-weight: 400; color: var(--gm-cream);
+        }
+        .bd-pricing-total-row {
+          display: flex; justify-content: space-between; align-items: flex-end;
+          margin-top: 1.25rem; padding-top: 1.25rem;
+          border-top: 1px solid var(--gm-border);
+        }
+        .bd-pricing-total-key {
+          font-family: var(--gm-font-d);
+          font-size: 1rem; font-weight: 400;
+          color: var(--gm-cream-dim); letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+        .bd-pricing-total-val {
+          font-family: var(--gm-font-d);
+          font-size: 2.2rem; font-weight: 300;
+          color: var(--gm-gold); line-height: 1;
+        }
+
+        /* ── Reference card ───────────────────────────────── */
+        .bd-reference {
+          background: var(--gm-surface);
+          border: 1px solid var(--gm-border-soft);
+          border-radius: 2px;
+          padding: 1.75rem 2rem;
+          opacity: 0; transform: translateY(12px);
+          transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
+          position: relative; overflow: hidden;
+        }
+        .bd-reference.visible { opacity: 1; transform: translateY(0); }
+
+        .bd-reference::after {
+          content: 'GM';
+          position: absolute; right: 1.5rem; top: 50%;
+          transform: translateY(-50%);
+          font-family: var(--gm-font-d);
+          font-size: 5rem; font-weight: 300;
+          color: rgba(192,155,83,0.04);
+          line-height: 1; pointer-events: none;
+          letter-spacing: 0.2em;
+        }
+
+        .bd-reference-title {
+          font-size: 0.6rem; font-weight: 500;
+          letter-spacing: 0.22em; text-transform: uppercase;
+          color: var(--gm-gold-dim); margin-bottom: 1rem;
+        }
+        .bd-id-block {
+          display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+        }
+        .bd-id-value {
+          font-family: monospace;
+          font-size: 0.85rem; color: var(--gm-cream-dim);
+          background: var(--gm-surface-2);
+          border: 1px solid var(--gm-border-soft);
+          border-radius: 1px; padding: 0.5rem 1rem;
+          letter-spacing: 0.08em; word-break: break-all;
+        }
+        .bd-created {
+          font-size: 0.72rem; font-weight: 300;
+          color: var(--gm-cream-faint); letter-spacing: 0.05em;
+        }
+
+        /* ── States ───────────────────────────────────────── */
+        .bd-state-box {
+          text-align: center; padding: 6rem 2rem;
+          animation: bd-fadein 0.6s ease both;
+        }
+        @keyframes bd-fadein {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .bd-state-icon  { font-size: 2.2rem; margin-bottom: 1rem; opacity: 0.4; }
+        .bd-state-title {
+          font-family: var(--gm-font-d); font-size: 1.7rem;
+          font-weight: 300; color: var(--gm-cream); margin-bottom: 0.5rem;
+        }
+        .bd-state-sub {
+          font-size: 0.78rem; font-weight: 300; color: var(--gm-cream-dim);
+        }
+
+        .bd-spinner {
+          width: 28px; height: 28px;
+          border: 1px solid rgba(192,155,83,0.15);
+          border-top-color: var(--gm-gold);
+          border-radius: 50%;
+          animation: bd-spin 0.85s linear infinite;
+          margin: 0 auto 1.25rem;
+        }
+        @keyframes bd-spin { to { transform: rotate(360deg); } }
+
+        .bd-error-box {
+          background: rgba(192,80,80,0.06);
+          border: 1px solid rgba(192,80,80,0.2);
+          border-radius: 2px; padding: 1rem 1.4rem;
+          font-size: 0.8rem; color: rgba(240,160,160,0.8);
+          letter-spacing: 0.03em;
+        }
+
+        /* ── Responsive ───────────────────────────────────── */
+        @media (max-width: 640px) {
+          .bd-grid { grid-template-columns: 1fr; }
+          .bd-hero { flex-direction: column; align-items: flex-start; }
+          .bd-hero-right { text-align: left; }
+          .bd-dates-strip { grid-template-columns: 1fr; gap: 1.5rem; }
+          .bd-dates-divider { flex-direction: row; }
+          .bd-date-block.right { text-align: left; }
+          .bd-dates-line { width: 30px; height: 1px; }
+          .bd-status-desc { display: none; }
+        }
+      

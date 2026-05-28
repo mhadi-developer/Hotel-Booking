@@ -7,7 +7,7 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
+  id         String    @id @default(uuid()) @unique
   email      String    @unique
   firstName  String?
   lastName   String?
@@ -57,7 +57,7 @@ model RoomImage {
 }
 
 model Booking {
-  id         String          @id @default(uuid())
+  id         String          @id @default(uuid()) @unique
 
   userId     String
   roomId     String

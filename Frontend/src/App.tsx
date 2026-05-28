@@ -11,6 +11,9 @@ import RoomDetail from "./pages/RoomDetail.tsx"
 import AboutUs from "./pages/AboutUs.tsx"
 import BookingCart from "./pages/BookingCart.tsx"
 import BookingPage from "./pages/BookNow.tsx"
+import PaymentSuccess from "./pages/PaymentSuccess.tsx"
+import PaymentCancel from "./pages/PaymentCancel.tsx"
+import BookingDetail from "./pages/BookingDetailsPage.tsx"
 
 export function App() {
 
@@ -30,12 +33,18 @@ export function App() {
 
 
         <Route path="/booking/cart" element={<BookingCart />} />
+        <Route path="/booking/details/:bookingId" element={<BookingDetail />} />
+
 
 
 
         <Route path="/login" element={<LoginForm />} />
 
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/cancel" element={<PaymentCancel />} />
+
+
 
         <Route path="*" element={<Page404/>}/>
       </Routes>

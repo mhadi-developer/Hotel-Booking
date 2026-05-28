@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/immutability */
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,7 +7,6 @@ import { z } from "zod";
 import { Link } from "react-router";
 import axiosInstance from "../resources/axios.Instance.create";
 import { Bounce, ToastContainer , toast } from "react-toastify";
-import { useState } from "react";
 
  const loginSchema = z.object({
   email: z
@@ -25,8 +26,7 @@ import { useState } from "react";
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
-  const [error, setError] = useState<string>()
-
+  
   const {
     register,
     handleSubmit,

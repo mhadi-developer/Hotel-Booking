@@ -18,8 +18,6 @@ export const isAuthenticated = async (req, res, next) => {
 
     req.user = decoded;
 
-    console.log({ decoded });
-
     next();
   } catch (error) {
     console.log(error);

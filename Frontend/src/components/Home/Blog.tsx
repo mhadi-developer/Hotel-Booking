@@ -3,7 +3,6 @@ import React from "react";
 const LatestBlog = () => {
   return (
     <section className="latest-blog spad my-5">
-
       <div className="container">
 
         {/* TITLE */}
@@ -16,14 +15,20 @@ const LatestBlog = () => {
           </div>
         </div>
 
-        {/* ROW 1 */}
         <div className="row">
 
+          {/* ITEM 1 */}
           <div className="col-lg-3 p-0 order-lg-1 col-md-6 order-md-1">
             <div
-              className="latest__blog__pic set-bg"
-              data-setbg="/assets/img/latest-blog/lb-1.jpg"
-            ></div>
+              className="latest__blog__pic"
+              style={{
+                backgroundImage: "url('/assets/img/latest-blog/lb-1.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                height: "100%",
+                minHeight: "250px",
+              }}
+            />
           </div>
 
           <div className="col-lg-3 p-0 order-lg-2 col-md-6 order-md-2">
@@ -37,11 +42,17 @@ const LatestBlog = () => {
             </div>
           </div>
 
+          {/* ITEM 2 */}
           <div className="col-lg-3 p-0 order-lg-3 col-md-6 order-md-4">
             <div
-              className="latest__blog__pic set-bg"
-              data-setbg="/assets/img/latest-blog/lb-2.jpg"
-            ></div>
+              className="latest__blog__pic"
+              style={{
+                backgroundImage: "url('/assets/img/latest-blog/lb-2.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                minHeight: "250px",
+              }}
+            />
           </div>
 
           <div className="col-lg-3 p-0 order-lg-4 col-md-6 order-md-3">
@@ -55,13 +66,17 @@ const LatestBlog = () => {
             </div>
           </div>
 
-          {/* ROW 2 */}
-
+          {/* ITEM 3 */}
           <div className="col-lg-3 p-0 order-lg-6 col-md-6 order-md-5">
             <div
-              className="latest__blog__pic latest__blog__pic__last__row set-bg"
-              data-setbg="/assets/img/latest-blog/lb-3.jpg"
-            ></div>
+              className="latest__blog__pic"
+              style={{
+                backgroundImage: "url('/assets/img/latest-blog/lb-3.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                minHeight: "250px",
+              }}
+            />
           </div>
 
           <div className="col-lg-3 p-0 order-lg-5 col-md-6 order-md-6">
@@ -75,11 +90,17 @@ const LatestBlog = () => {
             </div>
           </div>
 
+          {/* ITEM 4 */}
           <div className="col-lg-3 p-0 order-lg-8 col-md-6 order-md-8">
             <div
-              className="latest__blog__pic latest__blog__pic__last__row set-bg"
-              data-setbg="/assets/img/latest-blog/lb-4.jpg"
-            ></div>
+              className="latest__blog__pic"
+              style={{
+                backgroundImage: "url('/assets/img/latest-blog/lb-4.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                minHeight: "250px",
+              }}
+            />
           </div>
 
           <div className="col-lg-3 p-0 order-lg-7 col-md-6 order-md-7">
@@ -95,7 +116,6 @@ const LatestBlog = () => {
 
         </div>
       </div>
-
     </section>
   );
 };

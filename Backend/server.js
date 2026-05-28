@@ -8,6 +8,8 @@ import cors from "cors";
 import userAuthRoutes from "./assets/routes/user.auth.routes.js";
 import adminRoutes from "./assets/routes/admin.routes.js"
 import roomsRoutes from "./assets/routes/room.routes.js"
+import paymentRoutes from "./assets/routes/checkout.sessions.routes.js"
+import bookingRoutes from "./assets/routes/booking.routes.js"
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -40,6 +42,9 @@ app.use(cookieParser())
 app.use("/api", userAuthRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", roomsRoutes);
+app.use("/api", paymentRoutes);
+app.use("/api",bookingRoutes)
+
 
 
 

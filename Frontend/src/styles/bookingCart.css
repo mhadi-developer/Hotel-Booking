@@ -1,0 +1,456 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap');
+
+:root {
+    --gm-bg: #090d16;
+    --gm-surface: rgba(255, 255, 255, 0.025);
+    --gm-border: rgba(192, 155, 83, 0.15);
+    --gm-gold: #c09b53;
+    --gm-gold-dim: rgba(192, 155, 83, 0.35);
+    --gm-cream: #f0ead8;
+    --gm-cream-dim: rgba(240, 234, 216, 0.45);
+    --gm-cream-faint: rgba(240, 234, 216, 0.15);
+    --gm-danger: #c05050;
+    --gm-success: #4caf87;
+    --gm-font-display: 'Cormorant Garamond', serif;
+    --gm-font-body: 'Jost', sans-serif;
+}
+
+.gm-cart-page {
+    min-height: 100vh;
+    background-color: var(--gm-bg);
+    background-image:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(192, 155, 83, 0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 35% at 90% 90%, rgba(192, 155, 83, 0.04) 0%, transparent 55%);
+    font-family: var(--gm-font-body);
+    padding-bottom: 6rem;
+}
+
+/* ── Page Header ─────────────────────────────────── */
+.gm-page-header {
+    padding: 4rem 0 2.5rem;
+    text-align: center;
+    position: relative;
+}
+
+.gm-page-header::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gm-gold), transparent);
+    margin: 1.5rem auto 0;
+}
+
+.gm-eyebrow {
+    font-family: var(--gm-font-body);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gm-gold);
+    margin-bottom: 0.75rem;
+}
+
+.gm-page-title {
+    font-family: var(--gm-font-display);
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    font-weight: 300;
+    color: var(--gm-cream);
+    margin: 0;
+    line-height: 1.1;
+}
+
+.gm-page-title em {
+    font-style: italic;
+    color: var(--gm-gold);
+}
+
+.gm-page-subtitle {
+    font-size: 0.82rem;
+    font-weight: 300;
+    color: var(--gm-cream-dim);
+    letter-spacing: 0.04em;
+    margin-top: 0.6rem;
+}
+
+/* ── Booking Card ────────────────────────────────── */
+.gm-booking-item {
+    background: var(--gm-surface);
+    border: 1px solid var(--gm-border);
+    border-radius: 2px;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1rem;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.55s ease, transform 0.55s ease, border-color 0.3s;
+}
+
+.gm-booking-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.gm-booking-item:nth-child(1) {
+    transition-delay: 0.05s;
+}
+
+.gm-booking-item:nth-child(2) {
+    transition-delay: 0.15s;
+}
+
+.gm-booking-item:nth-child(3) {
+    transition-delay: 0.25s;
+}
+
+.gm-booking-item:nth-child(4) {
+    transition-delay: 0.35s;
+}
+
+.gm-booking-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--gm-gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.gm-booking-item:hover {
+    border-color: rgba(192, 155, 83, 0.3);
+}
+
+.gm-booking-item:hover::before {
+    opacity: 1;
+}
+
+.gm-room-name {
+    font-family: var(--gm-font-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--gm-cream);
+    margin-bottom: 0.9rem;
+    letter-spacing: 0.01em;
+}
+
+.gm-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.gm-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.gm-meta-label {
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gm-gold-dim);
+}
+
+.gm-meta-value {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--gm-cream-dim);
+}
+
+.gm-status-badge {
+    display: inline-block;
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 1px;
+    border: 1px solid;
+    margin-top: 1rem;
+}
+
+.gm-price-col {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+    min-width: 100px;
+}
+
+.gm-price-amount {
+    font-family: var(--gm-font-display);
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--gm-cream);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+
+.gm-price-per-day {
+    font-size: 0.68rem;
+    color: var(--gm-cream-faint);
+    letter-spacing: 0.08em;
+    margin-bottom: 1.25rem;
+}
+
+.gm-btn-remove {
+    background: transparent;
+    border: 1px solid rgba(192, 80, 80, 0.3);
+    color: rgba(192, 80, 80, 0.6);
+    font-family: var(--gm-font-body);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.45rem 1rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border-radius: 1px;
+}
+
+.gm-btn-remove:hover:not(:disabled) {
+    background: rgba(192, 80, 80, 0.1);
+    border-color: var(--gm-danger);
+    color: var(--gm-danger);
+}
+
+.gm-btn-remove:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Summary Panel ───────────────────────────────── */
+.gm-summary-panel {
+    background: var(--gm-surface);
+    border: 1px solid var(--gm-border);
+    border-radius: 2px;
+    padding: 2rem 1.75rem;
+    position: sticky;
+    top: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+}
+
+.gm-summary-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.gm-summary-panel::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gm-gold), transparent);
+    margin-bottom: 1.75rem;
+}
+
+.gm-summary-title {
+    font-family: var(--gm-font-display);
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--gm-cream);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.02em;
+}
+
+.gm-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.gm-summary-row:last-of-type {
+    border-bottom: none;
+}
+
+.gm-summary-label {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--gm-cream-dim);
+    letter-spacing: 0.05em;
+}
+
+.gm-summary-value {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gm-cream);
+}
+
+.gm-total-row {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--gm-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.gm-total-label {
+    font-family: var(--gm-font-display);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--gm-cream-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.gm-total-amount {
+    font-family: var(--gm-font-display);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--gm-gold);
+    line-height: 1;
+}
+
+.gm-checkout-btn {
+    width: 100%;
+    margin-top: 1.75rem;
+    background: transparent;
+    border: 1px solid var(--gm-gold);
+    color: var(--gm-gold);
+    font-family: var(--gm-font-body);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 1px;
+}
+
+.gm-checkout-btn:hover:not(:disabled) {
+    background: var(--gm-gold);
+    color: var(--gm-bg);
+}
+
+.gm-checkout-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+/* ── States ──────────────────────────────────────── */
+.gm-state-box {
+    text-align: center;
+    padding: 5rem 2rem;
+    opacity: 0;
+    animation: gm-fadein 0.6s ease 0.2s forwards;
+}
+
+@keyframes gm-fadein {
+    to {
+        opacity: 1;
+    }
+}
+
+.gm-state-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.25rem;
+    opacity: 0.5;
+}
+
+.gm-state-title {
+    font-family: var(--gm-font-display);
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--gm-cream);
+    margin-bottom: 0.5rem;
+}
+
+.gm-state-subtitle {
+    font-size: 0.8rem;
+    color: var(--gm-cream-dim);
+    font-weight: 300;
+}
+
+/* ── Spinner ─────────────────────────────────────── */
+.gm-spinner {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--gm-border);
+    border-top-color: var(--gm-gold);
+    border-radius: 50%;
+    animation: gm-spin 0.8s linear infinite;
+    margin: 0 auto 1.25rem;
+}
+
+@keyframes gm-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Error alert ─────────────────────────────────── */
+.gm-error {
+    background: rgba(192, 80, 80, 0.07);
+    border: 1px solid rgba(192, 80, 80, 0.2);
+    border-radius: 2px;
+    padding: 0.9rem 1.25rem;
+    font-size: 0.8rem;
+    color: rgba(240, 160, 160, 0.8);
+    letter-spacing: 0.03em;
+    margin-bottom: 1.5rem;
+}
+.gm-booking-card {
+    display: flex;
+    gap: 1.5rem;
+    background: #111;
+    border: 1px solid #232323;
+    border-radius: 18px;
+    overflow: hidden;
+    padding: 1rem;
+}
+
+.gm-booking-image-wrapper {
+    width: 220px;
+    min-width: 220px;
+    height: 170px;
+    overflow: hidden;
+    border-radius: 14px;
+}
+
+.gm-booking-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gm-booking-content {
+    flex: 1;
+}
+
+.gm-booking-meta {
+    margin-top: 1rem;
+}
+
+.gm-booking-meta p {
+    margin-bottom: 0.45rem;
+}
+
+.gm-booking-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.gm-view-btn {
+    border: none;
+    background: #c09b53;
+    color: black;
+    padding: 0.7rem 1.1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}

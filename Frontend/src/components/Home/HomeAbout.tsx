@@ -1,6 +1,9 @@
 import React from "react";
 
+
 const HomeAbout = () => {
+
+  
   return (
     <section className="home-about">
 

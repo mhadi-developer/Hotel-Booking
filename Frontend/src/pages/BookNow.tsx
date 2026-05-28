@@ -1,201 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import "../styles/bookigPage.css";
 import { useAuth } from "../hooks/useAuth";
 import { useRooms } from "../hooks/useRooms";
+import axiosInstance from "../resources/axios.Instance.create";
 
 // ─────────────────────────────────────────────────────────────
-// TYPES
+// TYPES & CONSTANTS
 // ─────────────────────────────────────────────────────────────
 
-type BookingStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "CANCELLED"
-  | "COMPLETED";
-
-type AppView = "home" | "form" | "checkout" | "list";
-
-interface RoomImage {
-  id: string;
-  imageUrl: string;
-}
-
-interface Room {
-  id: string;
-  name: string;
-  price: number;
-  description?: string;
-  capacity?: number;
-  images?: RoomImage[];
-}
-
-interface LoggedInUser {
-  id: string;
-  firstName?: string;
-  lastName?: string;
-  email: string;
-}
-
-const STATUS_META: Record<
-  BookingStatus,
-  { label: string; badgeClass: string }
-> = {
-  PENDING: {
-    label: "Pending",
-    badgeClass: "bg-warning text-dark",
-  },
-
-  CONFIRMED: {
-    label: "Confirmed",
-    badgeClass: "bg-success text-white",
-  },
-
-  CANCELLED: {
-    label: "Cancelled",
-    badgeClass: "bg-danger text-white",
-  },
-
-  COMPLETED: {
-    label: "Completed",
-    badgeClass: "bg-secondary text-white",
-  },
-};
+type AppView = "home" | "form" | "checkout";
 
 const TODAY = new Date().toISOString().split("T")[0];
 
-// ─────────────────────────────────────────────────────────────
-// ZOD SCHEMA
-// ─────────────────────────────────────────────────────────────
-
 const bookingSchema = z
   .object({
-    userId: z.string().min(1, "Please login first"),
-
-    roomId: z.string().min(1, "Please select a room"),
-
-    guest: z.coerce
-      .number({
-        invalid_type_error: "Guests must be a number",
-      })
-      .min(1, "At least 1 guest required")
-      .max(8, "Maximum 8 guests allowed"),
-
-    checkIn: z.string().min(1, "Check-in date is required"),
-
-    checkOut: z.string().min(1, "Check-out date is required"),
-
-    status: z.enum([
-      "PENDING",
-      "CONFIRMED",
-      "CANCELLED",
-      "COMPLETED",
-    ]),
+    userId: z.string().min(1, "User ID is missing. Please log in first."),
+    roomId: z.string().min(1, "Please select a room."),
+    guest: z.coerce.number().min(1, "Minimum 1 guest").max(8, "Maximum 8 guests"),
+    checkIn: z.string().min(1, "Check-in date is required."),
+    checkOut: z.string().min(1, "Check-out date is required."),
+    status: z.enum(["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"]),
   })
-
-  .refine(
-    (d) =>
-      !d.checkIn ||
-      !d.checkOut ||
-      new Date(d.checkOut) > new Date(d.checkIn),
-
-    {
-      message: "Check-out must be after check-in",
-      path: ["checkOut"],
-    }
-  )
-
+  .refine((d) => !d.checkIn || !d.checkOut || new Date(d.checkOut) > new Date(d.checkIn), {
+    message: "Check-out must be after check-in.",
+    path: ["checkOut"],
+  })
   .refine((d) => !d.checkIn || d.checkIn >= TODAY, {
-    message: "Check-in cannot be in the past",
+    message: "Check-in date cannot be in the past.",
     path: ["checkIn"],
   });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
 
-type SavedBooking = BookingFormValues & {
-  id: string;
+interface PendingBooking extends BookingFormValues {
   totalPrice: number;
-  createdAt: string;
-};
-
-// ─────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────
-
-function calcNights(
-  checkIn: string,
-  checkOut: string
-): number {
-  if (!checkIn || !checkOut) return 0;
-
-  const diff =
-    new Date(checkOut).getTime() -
-    new Date(checkIn).getTime();
-
-  return Math.max(0, Math.floor(diff / 86_400_000));
-}
-
-function calcTotal(
-  fetchedRooms: Room[],
-  roomId: string,
-  nights: number
-): number {
-  const room = fetchedRooms.find((r) => r.id === roomId);
-
-  return room ? room.price * nights : 0;
+  roomName: string;
+  roomImage: string|undefined;
 }
 
 // ─────────────────────────────────────────────────────────────
-// COMPONENT
+// MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────
 
 export default function HotelBookingPage() {
   const { loggedInUser } = useAuth() as {
-    loggedInUser: LoggedInUser | null;
+    loggedInUser: { id: string; email: string; lastName?: string } | null;
   };
+  const { fetchedRooms, loading, error } = useRooms();
 
-  // ───── STATES ─────
-
-  const [view, setView] =
-    useState<AppView>("home");
-
-  const [bookings, setBookings] = useState<
-    SavedBooking[]
-  >([]);
-
-  const [submitted, setSubmitted] =
-    useState(false);
-
-  const [pendingBooking, setPendingBooking] =
-    useState<
-      (BookingFormValues & {
-        totalPrice: number;
-      }) | null
-    >(null);
-
-  // ───────────────────────────────────────────────────────────
-  // FETCH ROOMS
-  // ───────────────────────────────────────────────────────────
-  const { fetchedRooms, loading , error } = useRooms();
-  
-
-  // ───────────────────────────────────────────────────────────
-  // REACT HOOK FORM
-  // ───────────────────────────────────────────────────────────
+  const [view, setView] = useState<AppView>("home");
+  const [pendingBooking, setPendingBooking] = useState<PendingBooking | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     control,
     watch,
-    reset,
-
-    formState: { errors, isValid },
+    setValue,
+    trigger,
+    formState: { errors },
   } = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
-
     defaultValues: {
       userId: loggedInUser?.id ?? "",
       roomId: "",
@@ -204,546 +74,326 @@ export default function HotelBookingPage() {
       checkOut: "",
       status: "PENDING",
     },
-
     mode: "onChange",
   });
 
   const watchedValues = watch();
 
-  const nights = calcNights(
-    watchedValues.checkIn,
-    watchedValues.checkOut
-  );
+  // Sync userId if auth hook resolves after mount
+  useEffect(() => {
+    if (loggedInUser?.id) {
+      setValue("userId", loggedInUser.id);
+      trigger("userId");
+    }
+  }, [loggedInUser, setValue, trigger]);
 
-  const estimatedTotal =
-    watchedValues.roomId && nights > 0
-      ? calcTotal(
-          fetchedRooms,
-          watchedValues.roomId,
-          nights
-        )
-      : 0;
+  // ── Derived values ──────────────────────────────────────────
+  const nights = (() => {
+    if (!watchedValues.checkIn || !watchedValues.checkOut) return 0;
+    const diff =
+      new Date(watchedValues.checkOut).getTime() -
+      new Date(watchedValues.checkIn).getTime();
+    return Math.max(0, Math.floor(diff / 86_400_000));
+  })();
 
-  const selectedRoom = fetchedRooms?.find(
-    (r) => r.id === watchedValues.roomId
-  );
+  const selectedRoom = fetchedRooms?.find((r) => r.id === watchedValues.roomId);
+  const estimatedTotal = selectedRoom ? selectedRoom.price * nights : 0;
 
-  // ───────────────────────────────────────────────────────────
-  // SUBMIT
-  // ───────────────────────────────────────────────────────────
+  // ── Handlers ────────────────────────────────────────────────
 
-  const onSubmit = (
-    data: BookingFormValues
-  ) => {
-    const finalPayload = {
-      ...data,
-
-      totalPrice: estimatedTotal,
-
-      bookedBy: loggedInUser?.lastName,
-
-      bookedByEmail: loggedInUser?.email,
-
-      bookingDate: new Date().toISOString(),
-    };
-
-    console.log(
-      "FINAL BOOKING PAYLOAD =>",
-      finalPayload
-    );
-
+  const onSubmit = (data: BookingFormValues) => {
     setPendingBooking({
       ...data,
       totalPrice: estimatedTotal,
+      roomName: selectedRoom?.name ?? "Unknown Room",
+      roomImage:selectedRoom?.images[0].secure_url
     });
-
+    setCheckoutError(null);
     setView("checkout");
   };
 
-  // ───────────────────────────────────────────────────────────
-  // CONFIRM BOOKING
-  // ───────────────────────────────────────────────────────────
-
-  const confirmBooking = () => {
+  const confirmBooking = async () => {
     if (!pendingBooking) return;
+    setCheckoutLoading(true);
+    setCheckoutError(null);
 
-    const newBooking: SavedBooking = {
-      ...pendingBooking,
+    try {
+      // ────────────────────────────────────────────────────────
+      // BACKEND — Create Stripe Checkout Session
+      // Replace "/api/bookings/checkout" with your actual route
+      // ────────────────────────────────────────────────────────
+      const { data } = await axiosInstance.post(`${import.meta.env.VITE_BACKEND_URL}/booking/checkout/session`, {
+        roomId: pendingBooking.roomId,
+        userId: pendingBooking.userId,
+        checkIn: pendingBooking.checkIn,
+        checkOut: pendingBooking.checkOut,
+        guest: pendingBooking.guest,
+        totalPrice: pendingBooking.totalPrice,
+        roomName: pendingBooking.roomName,
+        roomImage:pendingBooking.roomImage
+      });
 
-      id: `BK-${Math.random()
-        .toString(36)
-        .slice(2, 8)
-        .toUpperCase()}`,
-
-      createdAt: new Date().toISOString(),
-    };
-
-    setBookings((prev) => [
-      newBooking,
-      ...prev,
-    ]);
-
-    setSubmitted(true);
-
-    reset({
-      userId: loggedInUser?.id ?? "",
-      roomId: "",
-      guest: 1,
-      checkIn: "",
-      checkOut: "",
-      status: "PENDING",
-    });
-
-    setTimeout(() => {
-      setSubmitted(false);
-
-      setView("list");
-    }, 1500);
+      window.location.href = data.url;
+      // ────────────────────────────────────────────────────────
+    } catch (err: any) {
+      setCheckoutError(
+        err?.response?.data?.message || "Payment failed. Please try again."
+      );
+    } finally {
+      setCheckoutLoading(false);
+    }
   };
 
-  // ───────────────────────────────────────────────────────────
-  // HOME VIEW
-  // ───────────────────────────────────────────────────────────
-
+  // ─────────────────────────────────────────────────────────
+  // VIEW: HOME
+  // ─────────────────────────────────────────────────────────
   if (view === "home") {
     return (
       <div className="hotel-page">
         <div className="hotel-hero">
           <div className="container">
-
-            {/* USER PROFILE */}
-            {loggedInUser && (
-              <div className="guest-info-banner mb-4">
-                <span className="guest-info-avatar">
-                  {loggedInUser?.lastName
-                    ?.charAt(0)
-                    .toUpperCase()}
-                </span>
-
-                <div>
-                  <p className="guest-info-name">
-                    {loggedInUser?.lastName}
-                  </p>
-
-                  <p className="guest-info-email">
-                    {loggedInUser?.email}
-                  </p>
-                </div>
-
-                <span className="guest-info-badge">
-                  Logged In Guest
-                </span>
-              </div>
-            )}
-
-            <p className="hero-eyebrow">
-              Est. 1924 · Rawalpindi
-            </p>
-
             <h1 className="hero-title">
-              Welcome{" "}
-              {loggedInUser
-                ?   loggedInUser?.lastName
-                : "Guest"}{" "}
-              to <span>Grand Maison</span>
+              Welcome to <span>Grand Maison</span>
             </h1>
-
-            <p className="hero-sub">
-              Luxury fetchedRooms with premium comfort.
-            </p>
-
-            <button type="button"
+            <button
               className="btn-home-cta"
-              onClick={() => setView("form")}
+              onClick={() => loggedInUser ? setView("form") : null}
+              style={{ opacity: loggedInUser ? 1 : 0.5, cursor: loggedInUser ? "pointer" : "not-allowed" }}
+              title={!loggedInUser ? "Please log in to reserve a room" : undefined}
             >
               Reserve A Room →
             </button>
+            {!loggedInUser && (
+              <p className="mt-3 text-warning small">Please log in to make a reservation.</p>
+            )}
           </div>
         </div>
 
-        {/* ROOMS */}
         <div className="container py-5">
-
-          <div className="text-center mb-5">
-            <h2 className="section-head">
-              Our Rooms & Suites
-            </h2>
-          </div>
-
-          {loading && (
-            <div className="text-center">
-              Loading fetchedRooms...
-            </div>
-          )}
-
-          {
-            error && (
-              <div className="text-center">
-                 Error {error}
-              </div>
-            )
-          }
-
-      
-          {!loading && ! error &&
-            fetchedRooms.length > 0 && (
-              <div className="row g-4">
-
-                {fetchedRooms.map((room) => (
-                  <div
-                    className="col-md-4"
-                    key={room.id}
-                  >
-                    <div className="booking-card p-3">
-
-                      {/* ROOM IMAGE */}
-                      {room.images?.[0]
-                        ?.secure_url && (
-                        <img
-                          src={
-                            room.images[0]
-                              .secure_url
-                          }
-                          alt={room.name}
-                          style={{
-                            width: "100%",
-                            height: "220px",
-                            objectFit: "cover",
-                            borderRadius: "12px",
-                            marginBottom: "1rem",
-                          }}
-                        />
-                      )}
-
-                      <h3>{room.name}</h3>
-
-                      <p>
-                        {room.description}
-                      </p>
-
-                      <h4>
-                        ${room.price}
-                        <span
-                          style={{
-                            fontSize: "0.9rem",
-                            color: "#999",
-                          }}
-                        >
-                          {" "}
-                          /night
-                        </span>
-                      </h4>
-
-                      {room.capacity && (
-                        <p>
-                          Up to{" "}
-                          {room.capacity} guests
-                        </p>
-                      )}
-
-                      <button
-                        className="btn-book mt-3"
-                        onClick={() =>
-                          setView("form")
-                        }
-                      >
-                        Book Now
-                      </button>
-                    </div>
+          {loading && <p className="text-center">Loading rooms...</p>}
+          {error && <p className="text-danger text-center">{error}</p>}
+          <div className="row g-4">
+            {fetchedRooms?.map((room) => (
+              <div className="col-md-4" key={room.id}>
+                <div className="booking-card p-3 text-center">
+                  <div>
+                    <img src={room.images?.[0]?.secure_url} alt={room.name} />
                   </div>
-                ))}
+                  <h3>{room.name}</h3>
+                  <p className="price-amount">${room.price} /night</p>
+                  {loggedInUser ? (
+                    <button
+                      className="btn-book mt-3"
+                      onClick={() => {
+                        setValue("roomId", room.id);
+                        setView("form");
+                      }}
+                    >
+                      Book Now
+                    </button>
+                  ) : (
+                    <p className="text-danger small mt-3 mb-0">Log in to book this room</p>
+                  )}
+                </div>
               </div>
-            )}
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
-  // ───────────────────────────────────────────────────────────
-  // FORM VIEW
-  // ───────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────
+  // VIEW: CHECKOUT
+  // ─────────────────────────────────────────────────────────
+  if (view === "checkout" && pendingBooking) {
+    return (
+      <div className="hotel-page container py-5">
+        <div className="booking-card p-4 mx-auto" style={{ maxWidth: "600px" }}>
+          <h2 className="section-head mb-4 text-center">Confirm Your Stay</h2>
 
-  return (
-    <div className="hotel-page">
-      <div className="container py-5">
+          <div className="price-summary p-3 bg-light rounded mb-4 text-dark">
+            <p><strong>Room:</strong> {pendingBooking.roomName}</p>
+            <p>
+              <strong>Dates:</strong> {pendingBooking.checkIn} → {pendingBooking.checkOut}{" "}
+              <span className="text-muted">({nights} nights)</span>
+            </p>
+            <p><strong>Guests:</strong> {pendingBooking.guest}</p>
+            <hr />
+            <p className="h4 text-success mb-0">Total: ${pendingBooking.totalPrice}</p>
+          </div>
 
-        <div className="booking-card p-4">
-
-          <h2 className="section-head mb-4">
-            Booking Details
-          </h2>
-
-          {/* USER INFO */}
-          {loggedInUser && (
-            <div className="guest-info-banner mb-4">
-              <span className="guest-info-avatar">
-                {loggedInUser?.lastName
-                  ?.charAt(0)
-                  .toUpperCase()}
-              </span>
-
-              <div>
-                <p className="guest-info-name">
-                  {loggedInUser?.lastName}
-                </p>
-
-                <p className="guest-info-email">
-                  {loggedInUser.email}
-                </p>
-              </div>
-
-              <span className="guest-info-badge">
-                Booking As This Guest
-              </span>
-            </div>
+          {checkoutError && (
+            <div className="alert alert-danger mb-3">{checkoutError}</div>
           )}
 
-          {/* FORM */}
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-          >
-
-            {/* HIDDEN USER ID */}
-            <input
-              type="hidden"
-              {...register("userId")}
-            />
-
-            {/* ROOM */}
-            <div className="mb-4">
-              <label className="field-label">
-                Room
-              </label>
-
-              <select
-                className={`form-select ${
-                  errors.roomId
-                    ? "is-invalid"
-                    : ""
-                }`}
-                {...register("roomId")}
-              >
-                <option value="">
-                  Select Room
-                </option>
-
-                {fetchedRooms.map((room) => (
-                  <option
-                    key={room?.id}
-                    value={room?.id}
-                  >
-                    {room?.name} - $
-                    {room?.price}
-                  </option>
-                ))}
-              </select>
-
-              {errors.roomId && (
-                <p className="field-error">
-                  {errors.roomId.message}
-                </p>
-              )}
-            </div>
-
-            {/* DATES */}
-            <div className="row g-3 mb-4">
-
-              <div className="col-md-6">
-                <label className="field-label">
-                  Check In
-                </label>
-
-                <input
-                  type="date"
-                  min={TODAY}
-                  className={`form-control ${
-                    errors.checkIn
-                      ? "is-invalid"
-                      : ""
-                  }`}
-                  {...register("checkIn")}
-                />
-
-                {errors.checkIn && (
-                  <p className="field-error">
-                    {errors.checkIn.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="col-md-6">
-                <label className="field-label">
-                  Check Out
-                </label>
-
-                <input
-                  type="date"
-                  min={
-                    watchedValues.checkIn ||
-                    TODAY
-                  }
-                  className={`form-control ${
-                    errors.checkOut
-                      ? "is-invalid"
-                      : ""
-                  }`}
-                  {...register("checkOut")}
-                />
-
-                {errors.checkOut && (
-                  <p className="field-error">
-                    {errors.checkOut.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* GUEST COUNTER */}
-            <div className="mb-4">
-              <label className="field-label">
-                Guests
-              </label>
-
-              <Controller
-                name="guest"
-                control={control}
-                render={({ field }) => (
-                  <div className="guest-counter">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        field.onChange(
-                          Math.max(
-                            1,
-                            field.value - 1
-                          )
-                        )
-                      }
-                    >
-                      −
-                    </button>
-
-                    <span>{field.value}</span>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        field.onChange(
-                          Math.min(
-                            selectedRoom?.capacity ??
-                              8,
-                            field.value + 1
-                          )
-                        )
-                      }
-                    >
-                      +
-                    </button>
-                  </div>
-                )}
-              />
-
-              {errors.guest && (
-                <p className="field-error">
-                  {errors.guest.message}
-                </p>
-              )}
-            </div>
-
-            {/* STATUS */}
-            <div className="mb-4">
-              <label className="field-label">
-                Status
-              </label>
-
-              <select
-                className="form-select"
-                {...register("status")}
-              >
-                {(Object.keys(
-                  STATUS_META
-                ) as BookingStatus[]).map(
-                  (status) => (
-                    <option
-                      key={status}
-                      value={status}
-                    >
-                      {
-                        STATUS_META[status]
-                          .label
-                      }
-                    </option>
-                  )
-                )}
-              </select>
-            </div>
-
-            {/* TOTAL */}
-            <div className="price-summary mt-4">
-              <p className="price-label">
-                Estimated Total
-              </p>
-
-              <p className="price-amount">
-                ${estimatedTotal}
-              </p>
-
-              {selectedRoom && nights > 0 && (
-                <p className="price-per">
-                  {nights} nights × $
-                  {selectedRoom.price}
-                </p>
-              )}
-            </div>
-
-            {/* BUTTONS */}
-            <div className="d-flex gap-3 mt-4">
-              <button
-                type="submit"
-                disabled={!isValid}
-                className="btn-book"
-              >
-                Proceed To Checkout →
-              </button>
-
-              <button
-                type="button"
-                className="btn-outline-gold"
-                onClick={() =>
-                  setView("home")
-                }
-              >
-                Back
-              </button>
-            </div>
-          </form>
-
-          {/* CHECKOUT PREVIEW */}
-          {view === "checkout" &&
-            pendingBooking && (
-              <div className="mt-5">
-
-                <h3>Booking Summary</h3>
-
-                <pre>
-                  {JSON.stringify(
-                    pendingBooking,
-                    null,
-                    2
-                  )}
-                </pre>
-
-                <button
-                  className="btn-book"
-                  onClick={confirmBooking}
-                >
-                  {submitted
-                    ? "Confirmed ✓"
-                    : "Confirm Booking"}
-                </button>
-              </div>
-            )}
+          <div className="d-flex gap-3">
+            <button
+              className="btn-book w-100"
+              onClick={confirmBooking}
+              disabled={checkoutLoading}
+            >
+              {checkoutLoading ? "Redirecting to Payment..." : "Confirm & Pay →"}
+            </button>
+            <button
+              className="btn-outline-gold w-100"
+              onClick={() => setView("form")}
+              disabled={checkoutLoading}
+            >
+              Back to Edit
+            </button>
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // VIEW: FORM
+  // ─────────────────────────────────────────────────────────
+
+  // Auth guard — blocks direct access to the form if not logged in
+  if (!loggedInUser) {
+    return (
+      <div className="hotel-page container py-5">
+        <div className="booking-card p-5 text-center mx-auto" style={{ maxWidth: "500px" }}>
+          <h4 className="mb-2">Login Required</h4>
+          <p className="text-muted mb-4">You must be logged in to reserve a room.</p>
+          <button className="btn-book" onClick={() => setView("home")}>
+            ← Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="hotel-page container py-5">
+      <div className="booking-card p-4">
+        <h2 className="section-head mb-4">Booking Details</h2>
+
+        {Object.keys(errors).length > 0 && (
+          <div className="alert alert-danger mb-4">
+            <h5 className="alert-heading">Please fix the following:</h5>
+            <ul className="mb-0">
+              {Object.entries(errors).map(([field, err]) => (
+                <li key={field}>
+                  <strong>{field}:</strong> {err?.message || (err as any).root?.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input type="hidden" {...register("userId")} />
+          <input type="hidden" {...register("status")} />
+
+          {/* Room Select */}
+          <div className="mb-4">
+            <label className="field-label">Select Room</label>
+            <select
+              className={`form-select ${errors.roomId ? "is-invalid" : ""}`}
+              {...register("roomId")}
+            >
+              <option value="">Choose Room...</option>
+              {fetchedRooms?.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name} — ${r.price}/night
+                </option>
+              ))}
+            </select>
+            {errors.roomId && (
+              <p className="text-danger small mt-1">{errors.roomId.message}</p>
+            )}
+          </div>
+
+          {/* Dates */}
+          <div className="row g-3 mb-4">
+            <div className="col-md-6">
+              <label className="field-label">Check In</label>
+              <input
+                type="date"
+                min={TODAY}
+                className={`form-control ${errors.checkIn ? "is-invalid" : ""}`}
+                {...register("checkIn")}
+              />
+              {errors.checkIn && (
+                <p className="text-danger small mt-1">{errors.checkIn.message}</p>
+              )}
+            </div>
+            <div className="col-md-6">
+              <label className="field-label">Check Out</label>
+              <input
+                type="date"
+                min={watchedValues.checkIn || TODAY}
+                className={`form-control ${errors.checkOut ? "is-invalid" : ""}`}
+                {...register("checkOut")}
+              />
+              {errors.checkOut && (
+                <p className="text-danger small mt-1">{errors.checkOut.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Guests */}
+          <div className="mb-4 text-center">
+            <label className="field-label d-block">Guests</label>
+            <Controller
+              name="guest"
+              control={control}
+              render={({ field }) => (
+                <div className="guest-counter d-inline-flex align-items-center gap-3">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => field.onChange(Math.max(1, field.value - 1))}
+                  >
+                    −
+                  </button>
+                  <span className="h5 mb-0 px-2">{field.value}</span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() =>
+                      field.onChange(Math.min(selectedRoom?.capacity || 8, field.value + 1))
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+            />
+            {errors.guest && (
+              <p className="text-danger small mt-1">{errors.guest.message}</p>
+            )}
+          </div>
+
+          {/* Price Summary */}
+          <div className="price-summary text-center mb-4">
+            <p className="price-label m-0">Estimated Total</p>
+            <p className="price-amount font-weight-bold h3">${estimatedTotal}</p>
+            {nights > 0 && (
+              <p className="text-muted small">
+                {nights} night{nights > 1 ? "s" : ""} × ${selectedRoom?.price}/night
+              </p>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="d-flex gap-3">
+            <button type="submit" className="btn-book flex-grow-1">
+              Proceed to Checkout →
+            </button>
+            <button
+              type="button"
+              className="btn-outline-gold"
+              onClick={() => setView("home")}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
