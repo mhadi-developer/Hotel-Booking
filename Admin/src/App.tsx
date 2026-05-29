@@ -7,13 +7,18 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "lineicons/dist/lineicons.css";
 import AddRoomForm from './assets/pages/AddRoomForm';
 import NotFound from './assets/pages/PageNotFound';
+import BookingManagment from './assets/pages/ManageBookingPage';
 
 function App() {
+ 
   return <>
   <BrowserRouter>
         <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/add/room' element={<AddRoomForm />} />
+        <Route path='/manage' element={<BookingManagment />} />
+
+        
         <Route path='/*' element={<NotFound />} />
 
         

@@ -5,8 +5,22 @@ import { stripe } from "../utils/stripe.js";
 
 export const createCheckoutSession = async (req, res) => {
   try {
-    const { bookingId, roomName, totalPrice, roomImage, roomId } = req.body;
+    const { bookingId, roomName, totalPrice, roomImage, roomId , checkIn , checkOut} = req.body;
     console.log({ roomId });
+
+    const roomAlreadyBooked = await prisma.Booking.FindFirst({
+      where: {
+        roomId,
+        checkIn,
+      },
+    });
+
+    if (roomAlreadyBooked) {
+      return res.status(402).json({
+        message: `room with room:${roomName}is already booked for ${checkIn}`,
+        success: false
+      })
+    }
 
     const data = req.body;
 
@@ -36,9 +50,6 @@ export const createCheckoutSession = async (req, res) => {
       success_url: `${process.env.CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}&room_Id=${roomId}`,
       cancel_url: `${process.env.CLIENT_URL}/payment/cancel`,
     });
-
-    data.checkIn = new Date(data.checkIn);
-    data.checkOut = new Date(data.checkOut);
 
     const bookingPayload = {
       userId: data.userId,

@@ -1,0 +1,112 @@
+ body {
+            background: #0f0f0f;
+            font-family: Inter, sans-serif;
+        }
+
+        .booking-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #111111, #1b1b1b);
+            color: white;
+        }
+
+        .booking-header {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 28px;
+            border-radius: 28px;
+        }
+
+        .page-title {
+            color: #d4af37;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            color: #9ca3af;
+        }
+
+        .search-input {
+            min-width: 260px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: white;
+            border-radius: 18px;
+            padding: 12px 16px;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .premium-btn {
+            background: linear-gradient(135deg, #d4af37, #8b6b14);
+            border: none;
+            color: black;
+            font-weight: 700;
+        }
+
+        .premium-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 28px;
+            transition: 0.3s ease;
+        }
+
+        .premium-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .premium-table-wrapper {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 32px;
+            
+        }
+
+        .premium-table {
+            color: white;
+        }
+
+        .premium-table thead th {
+            color: #9ca3af;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 16px;
+        }
+
+        .premium-table tbody td {
+            background: transparent;
+            color: #f3f4f6;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .search-input {
+                min-width: 100%;
+            }
+
+            .booking-header,
+            .premium-card,
+            .premium-table-wrapper {
+                padding: 22px;
+            }
+        }
+
+
+    
+
+    

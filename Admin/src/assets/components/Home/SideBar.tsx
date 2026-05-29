@@ -61,6 +61,9 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
                 <ul className="dropdown-nav">
                   <li><a href="settings.html">Settings</a></li>
                   <li><Link to="/add/room">Add Room</Link></li>
+                  <li><Link to={"/manage"} >Manage Booking</Link></li>
+
+                  
 
                   
                 </ul>

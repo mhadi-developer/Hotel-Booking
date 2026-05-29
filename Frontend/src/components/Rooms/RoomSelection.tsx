@@ -16,11 +16,15 @@ const RoomSelection = () => {
   
   // MEMOIZED ROOM JSX
   const renderedRooms = useMemo(() => {
-    return fetchedRooms?.map((room) => (
-      <div className="row" key={room.id}>
+    return fetchedRooms?.map((room, index) => (
+      <div className="row"  key={room.id}>
+
+
         
         {/* IMAGE SECTION */}
-        <div className="col-lg-6 p-0 order-lg-2 order-md-2 col-md-6">
+        <div className={`col-lg-6 p-0  col-md-6 ${
+         index % 2 ===0 ?  "order-lg-2 order-md-2" : "order-lg-1 order-md-1"
+        }`}>
           <Swiper
             modules={[Autoplay, Pagination]}
             autoplay={{ delay: 3000 }}
@@ -46,7 +50,12 @@ const RoomSelection = () => {
         </div>
 
         {/* TEXT SECTION */}
-        <div className="col-lg-6 p-0 order-lg-1 order-md-1 col-md-6">
+        <div className={`col-lg-6 p-0  col-md-6 ${
+           index % 2 === 0 ? "order-lg-1 order-md-1" : "  order-lg-2 order-md-2"
+          }`}
+          style={{
+          marginBlock:"10px"
+        }}>
           <div className="room__text">
             <h3>{room?.name}</h3>
 

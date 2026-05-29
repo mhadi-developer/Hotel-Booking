@@ -1,138 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import "../../styles/headers.css"
+import axiosInstance from "../../resources/axios.Instance.create";
 
 const Header = () => {
   const { loggedInUser, logout } = useAuth();
+  const [userBookings, setUserBookings] = useState([]);
+
+  useEffect(() => {
+    const getUserBookings = async () => {
+       try {
+         const response = await axiosInstance.get(`${import.meta.env.VITE_BACKEND_URL}/get/bookings`);
+         if (response.status === 200 || response.status === 201) {
+           setUserBookings(response.data.fetchedAllUserBookings)
+         }
+       } catch (error) {
+        console.log(error);
+        
+       }
+    }
+
+    getUserBookings();
+   },[])
 
   return (
     <>
-      {/* Local Component Styles */}
-      <style>
-        {`
-          .user-menu {
-            position: relative;
-            display: inline-block;
-          }
-
-          .user-dropdown {
-            position: absolute;
-            top: 115%;
-            right: 0;
-            min-width: 220px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-            padding: 10px 0;
-            z-index: 99999;
-
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.25s ease;
-          }
-
-          .user-menu:hover .user-dropdown {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-          }
-
-          .user-dropdown-item {
-            display: block;
-            width: 100%;
-            padding: 12px 18px;
-            text-decoration: none;
-            color: #222;
-            background: transparent;
-            border: none;
-            text-align: left;
-            transition: background 0.2s ease;
-            cursor: pointer;
-            font-size: 14px;
-          }
-
-          .user-dropdown-item:hover {
-            background: #f5f5f5;
-          }
-
-          .logout-btn {
-            color: #dc3545;
-            font-weight: 500;
-          }
-        `}
-      </style>
-      <style>
-        {`
-          /* MAIN MENU */
-          .menu__class {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-          }
-
-          .menu__class li {
-            position: relative;
-            list-style: none;
-          }
-
-          .menu__class a {
-            text-decoration: none;
-            color: #111;
-            padding: 10px;
-            display: block;
-          }
-
-          /* SUBMENU FIX */
-          .submenu {
-            position: absolute;
-            top: 120%;
-            left: 0;
-            min-width: 200px;
-            background: #fff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-            border-radius: 8px;
-            padding: 10px 0;
-
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: all 0.2s ease;
-
-            z-index: 9999;
-          }
-
-          /* SHOW ON HOVER */
-          .menu__class li:hover > .submenu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-          }
-
-          /* SUBMENU ITEMS */
-          .submenu li {
-            width: 100%;
-          }
-
-          .submenu a {
-            padding: 10px 16px;
-            display: block;
-            color: #222;
-          }
-
-          .submenu a:hover {
-            background: #f5f5f5;
-          }
-
-          /* SAFE HEADER LAYOUT */
-          .header__menu {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-          }
-        `}
-      </style>
+      
 
       <header className="header">
 
@@ -290,7 +184,9 @@ const Header = () => {
    
 
     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-        2
+                        {
+                        userBookings.length
+        }
     </span>
 </div>
                   </nav>

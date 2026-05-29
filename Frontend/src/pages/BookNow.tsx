@@ -22,6 +22,8 @@ const bookingSchema = z
     guest: z.coerce.number().min(1, "Minimum 1 guest").max(8, "Maximum 8 guests"),
     checkIn: z.string().min(1, "Check-in date is required."),
     checkOut: z.string().min(1, "Check-out date is required."),
+    checkInTime: z.string().min(1, "Check-in time is required."),
+checkOutTime: z.string().min(1, "Check-out time is required."),
     status: z.enum(["PENDING", "CONFIRMED", "CANCELLED", "COMPLETED"]),
   })
   .refine((d) => !d.checkIn || !d.checkOut || new Date(d.checkOut) > new Date(d.checkIn), {
@@ -73,6 +75,8 @@ export default function HotelBookingPage() {
       checkIn: "",
       checkOut: "",
       status: "PENDING",
+      checkInTime: "",
+checkOutTime: "",
     },
     mode: "onChange",
   });
@@ -122,16 +126,24 @@ export default function HotelBookingPage() {
       // BACKEND — Create Stripe Checkout Session
       // Replace "/api/bookings/checkout" with your actual route
       // ────────────────────────────────────────────────────────
-      const { data } = await axiosInstance.post(`${import.meta.env.VITE_BACKEND_URL}/booking/checkout/session`, {
+      const {data , status} = await axiosInstance.post(`${import.meta.env.VITE_BACKEND_URL}/booking/checkout/session`, {
         roomId: pendingBooking.roomId,
         userId: pendingBooking.userId,
-        checkIn: pendingBooking.checkIn,
-        checkOut: pendingBooking.checkOut,
+      checkIn: new Date(
+  `${pendingBooking.checkIn}T${pendingBooking.checkInTime}`
+),
+
+checkOut: new Date(
+  `${pendingBooking.checkOut}T${pendingBooking.checkOutTime}`
+),
         guest: pendingBooking.guest,
         totalPrice: pendingBooking.totalPrice,
         roomName: pendingBooking.roomName,
         roomImage:pendingBooking.roomImage
       });
+      if (status === 402) {
+        setCheckoutError(data.message);
+      }
 
       window.location.href = data.url;
       // ────────────────────────────────────────────────────────
@@ -310,31 +322,73 @@ export default function HotelBookingPage() {
 
           {/* Dates */}
           <div className="row g-3 mb-4">
-            <div className="col-md-6">
-              <label className="field-label">Check In</label>
-              <input
-                type="date"
-                min={TODAY}
-                className={`form-control ${errors.checkIn ? "is-invalid" : ""}`}
-                {...register("checkIn")}
-              />
-              {errors.checkIn && (
-                <p className="text-danger small mt-1">{errors.checkIn.message}</p>
-              )}
-            </div>
-            <div className="col-md-6">
-              <label className="field-label">Check Out</label>
-              <input
-                type="date"
-                min={watchedValues.checkIn || TODAY}
-                className={`form-control ${errors.checkOut ? "is-invalid" : ""}`}
-                {...register("checkOut")}
-              />
-              {errors.checkOut && (
-                <p className="text-danger small mt-1">{errors.checkOut.message}</p>
-              )}
-            </div>
-          </div>
+
+  <div className="col-md-6">
+    <label className="field-label">Check In Date</label>
+
+    <input
+      type="date"
+      min={TODAY}
+      className={`form-control ${errors.checkIn ? "is-invalid" : ""}`}
+      {...register("checkIn")}
+    />
+
+    {errors.checkIn && (
+      <p className="text-danger small mt-1">
+        {errors.checkIn.message}
+      </p>
+    )}
+  </div>
+
+  <div className="col-md-6">
+    <label className="field-label">Check In Time</label>
+
+    <input
+      type="time"
+      className={`form-control ${errors.checkInTime ? "is-invalid" : ""}`}
+      {...register("checkInTime")}
+    />
+
+    {errors.checkInTime && (
+      <p className="text-danger small mt-1">
+        {errors.checkInTime.message}
+      </p>
+    )}
+  </div>
+
+  <div className="col-md-6">
+    <label className="field-label">Check Out Date</label>
+
+    <input
+      type="date"
+      min={watchedValues.checkIn || TODAY}
+      className={`form-control ${errors.checkOut ? "is-invalid" : ""}`}
+      {...register("checkOut")}
+    />
+
+    {errors.checkOut && (
+      <p className="text-danger small mt-1">
+        {errors.checkOut.message}
+      </p>
+    )}
+  </div>
+
+  <div className="col-md-6">
+    <label className="field-label">Check Out Time</label>
+
+    <input
+      type="time"
+      className={`form-control ${errors.checkOutTime ? "is-invalid" : ""}`}
+      {...register("checkOutTime")}
+    />
+
+    {errors.checkOutTime && (
+      <p className="text-danger small mt-1">
+        {errors.checkOutTime.message}
+      </p>
+    )}
+  </div>
+</div>
 
           {/* Guests */}
           <div className="mb-4 text-center">

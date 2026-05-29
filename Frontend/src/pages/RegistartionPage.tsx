@@ -102,6 +102,10 @@ const RegisterForm = () => {
           navigate("/login");
         }, 2000);
       }
+
+      if (response.status === 402) {
+        toast.error(response.data.message);
+      }
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||

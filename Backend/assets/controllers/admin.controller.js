@@ -61,3 +61,32 @@ export const createRoom = async (req, res) => {
       })   
     }
 }
+// ***********************************************************
+
+export const getAllBookings = async (req, res) => {
+    try {
+        const fetchedBookings = await prisma.Booking.findMany({
+            include: {
+                user: true,
+                room: {
+                    include: {
+                        images: true
+                    }
+                }
+            }
+        });
+
+        res.status(200).json({
+            message: 'fetched all booking',
+            success: true,
+            fetchedBookings
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: error.message || "something went wrong ! Server Error ",
+            success: false
+        })
+        
+    }
+}
