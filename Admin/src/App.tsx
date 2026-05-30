@@ -8,6 +8,7 @@ import "lineicons/dist/lineicons.css";
 import AddRoomForm from './assets/pages/AddRoomForm';
 import NotFound from './assets/pages/PageNotFound';
 import BookingManagment from './assets/pages/ManageBookingPage';
+import BookingManageId from './assets/pages/ManageBookingById';
 
 function App() {
  
@@ -16,7 +17,8 @@ function App() {
         <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/add/room' element={<AddRoomForm />} />
-        <Route path='/manage' element={<BookingManagment />} />
+        <Route path='/manage/bookings' element={<BookingManagment />} />
+        <Route path='/manage/booking/:bookingId' element = {<BookingManageId/>}/>
 
         
         <Route path='/*' element={<NotFound />} />

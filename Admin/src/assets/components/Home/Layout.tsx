@@ -10,7 +10,9 @@ const Layout = ({ children }:{children:React.ReactNode}) => {
     <div className={`app-wrapper ${isOpen ? "sidebar-open" : "sidebar-closed"}`}>
       <Sidebar isOpen={isOpen} />
       <Header onMenuToggle={toggle} />
-      <main className="main-content">
+      <main className="main-content" style={{
+        background: "white"
+      }}>
         {children}
       </main>
     </div>

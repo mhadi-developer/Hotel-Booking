@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../utils/css/bookingManagmentPage.css"
 import { useEffect, useState } from "react";
 import axiosInstance from "../resources/axiosInstance";
+import { Link } from "react-router";
 export type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED";
 
 export type UserRole = "USER" | "ADMIN";
@@ -189,13 +190,13 @@ export default function BookingManagment() {
 
                   <td>
                     <div className="d-flex gap-2">
-                      <button className="btn btn-sm btn-light rounded-pill px-3">
+                      <Link className="btn btn-sm btn-light rounded-pill px-3" to={`/manage/booking/${booking.id}`}>
                         View
-                      </button>
+                      </Link>
 
-                      <button className="btn btn-sm premium-btn rounded-pill px-3">
+                      <Link className="btn btn-sm premium-btn rounded-pill px-3" to={`/manage/booking/${booking.id}`}>
                         Manage
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>

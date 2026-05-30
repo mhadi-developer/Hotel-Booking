@@ -90,3 +90,40 @@ export const getAllBookings = async (req, res) => {
         
     }
 }
+
+// *******************************************************
+
+export const getBookingById = async (req, res) => {
+    try {
+        const  {id}  = req.params;
+       
+        
+
+        const fetchedBookingById = await prisma.Booking.findUnique({
+            where: {
+                id: id
+            },
+            include: {
+                user: true,
+                room: {
+                    include: {
+                        images: true
+                    }
+                }
+            }
+        });
+
+
+        res.status(200).json({
+            message: `fetched bookingId by id: ${id}`,
+            success: true,
+            fetchedBookingById
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message || "Server Error",
+            success: false
+        })
+    }
+}

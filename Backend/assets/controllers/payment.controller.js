@@ -8,7 +8,7 @@ export const createCheckoutSession = async (req, res) => {
     const { bookingId, roomName, totalPrice, roomImage, roomId , checkIn , checkOut} = req.body;
     console.log({ roomId });
 
-    const roomAlreadyBooked = await prisma.Booking.FindFirst({
+    const roomAlreadyBooked = await prisma.Booking.findFirst({
       where: {
         roomId,
         checkIn,
