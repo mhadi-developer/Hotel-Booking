@@ -66,7 +66,7 @@ Grand-Maison/
 Installation & Setup
 Clone repository
 
-git clone https://github.com/your-username/grand-maison.git
+git clone (https://github.com/mhadi-developer/Hotel-Booking.git)
 
 Backend setup
 
