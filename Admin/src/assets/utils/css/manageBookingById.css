@@ -419,13 +419,13 @@
 
 
 
-.bmp-badge--CANCEL{
+.bmp-badge-CANCELLED{
     background: #FFF0F0;
     color: #8B1A1A;
     border: 1px solid rgba(229, 57, 53, 0.2);
 }
 
-.bmp-badge--CANCEL .bmp-badge__dot {
+.bmp-badge--CANCELLED .bmp-badge__dot {
     background: #E53935;
 }
 
@@ -1085,4 +1085,214 @@
     .bmp-tab {
         white-space: nowrap;
     }
+}
+
+/* ══════════════════════════════════════════════════
+   BOOKING EDIT MODAL
+   Append these rules to your existing manageBookingById.css
+══════════════════════════════════════════════════ */
+
+/* ── Backdrop ── */
+.bmp-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: bmp-fade-in 0.15s ease;
+}
+
+@keyframes bmp-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ── Modal card ── */
+.bmp-modal {
+    background: var(--surface, #1a1814);
+    border: 0.5px solid rgba(212, 160, 23, 0.2);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    animation: bmp-slide-up 0.2s ease;
+}
+
+@keyframes bmp-slide-up {
+    from {
+        transform: translateY(12px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ── Modal header ── */
+.bmp-modal__header {
+    background: var(--surface2, #221f1a);
+    border-bottom: 0.5px solid rgba(212, 160, 23, 0.18);
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bmp-modal__header-icon {
+    width: 34px;
+    height: 34px;
+    background: rgba(212, 160, 23, 0.1);
+    border: 0.5px solid rgba(212, 160, 23, 0.25);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.bmp-modal__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text, #f5f0e8);
+    letter-spacing: 0.04em;
+}
+
+.bmp-modal__subtitle {
+    font-size: 11px;
+    color: var(--text-muted, #8a8070);
+    margin-top: 2px;
+}
+
+.bmp-modal__close {
+    margin-left: auto;
+    background: transparent;
+    border: 0.5px solid rgba(212, 160, 23, 0.18);
+    border-radius: 4px;
+    color: var(--text-muted, #8a8070);
+    font-size: 18px;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.bmp-modal__close:hover {
+    color: var(--text, #f5f0e8);
+    border-color: rgba(212, 160, 23, 0.45);
+}
+
+/* ── Modal body ── */
+.bmp-modal__body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ── Date row ── */
+.bmp-modal__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* ── Field ── */
+.bmp-modal__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bmp-modal__label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted, #8a8070);
+}
+
+.bmp-modal__input {
+    background: var(--bg-dark, #0f0e0c);
+    border: 0.5px solid rgba(212, 160, 23, 0.22);
+    border-radius: 6px;
+    color: var(--text, #f5f0e8);
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+}
+
+.bmp-modal__input:focus {
+    border-color: #D4A017;
+}
+
+.bmp-modal__input--error {
+    border-color: #E53935 !important;
+}
+
+/* Remove number input spinners */
+.bmp-modal__input[type="number"]::-webkit-inner-spin-button,
+.bmp-modal__input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+}
+
+.bmp-modal__input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Date picker icon color fix (webkit) */
+.bmp-modal__input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6) sepia(1) saturate(2) hue-rotate(5deg);
+    cursor: pointer;
+}
+
+.bmp-modal__error {
+    font-size: 11px;
+    color: #E53935;
+}
+
+/* ── Nights badge ── */
+.bmp-modal__nights-badge {
+    background: rgba(212, 160, 23, 0.07);
+    border: 0.5px solid rgba(212, 160, 23, 0.18);
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bmp-modal__nights-label {
+    font-size: 12px;
+    color: var(--text-muted, #8a8070);
+}
+
+.bmp-modal__nights-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #D4A017;
+}
+
+/* ── Modal footer ── */
+.bmp-modal__footer {
+    padding: 1rem 1.25rem;
+    border-top: 0.5px solid rgba(212, 160, 23, 0.14);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
 }

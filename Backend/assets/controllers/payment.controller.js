@@ -1,3 +1,4 @@
+import { io } from "../../server.js";
 import { prisma } from "../config/db.js";
 import { sendEmail } from "../utils/email.js";
 import { bookingStatusEmail } from "../utils/emailTemplate.js";
@@ -85,8 +86,20 @@ export const createCheckoutSession = async (req, res) => {
         bookingData.status,
         roomBooked.name
       )
-    })
+    });
 
+    const io = req.app.get("io");
+    console.log("emiting event");
+    
+    if (session.url) {
+      io.to("admin").emit("booking-created", {
+        message: `User- ${userToSendMail.firstName}  ${userToSendMail.lastName} 
+      with has created a booking`,
+        userId: userToSendMail?.id,
+        bookingId: bookingData.id,
+        roomId: roomBooked.id,
+      });
+    }
     return res.json({ url: session.url });
   } catch (error) {
     console.log(error);

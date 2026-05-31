@@ -14,14 +14,18 @@ import BookingPage from "./pages/BookNow.tsx"
 import PaymentSuccess from "./pages/PaymentSuccess.tsx"
 import PaymentCancel from "./pages/PaymentCancel.tsx"
 import BookingDetail from "./pages/BookingDetailsPage.tsx"
+import UserProfile from "./pages/UserProfile.tsx"
 
 export function App() {
 
-  const { getLoggedInUser } = useAuth()
+  const { getLoggedInUser  , loggedInUser} = useAuth()
   
   useEffect(() => {
     getLoggedInUser();
-  },[])
+  }, [])
+  
+  console.log(loggedInUser);
+  
   return (
     <BrowserRouter>
       <Routes>
@@ -30,7 +34,8 @@ export function App() {
         <Route path="/room/details/:id?" element={<RoomDetail />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/book-now" element={<BookingPage />} />
-
+        <Route path="/profile" element={<UserProfile />} />
+        
 
         <Route path="/booking/cart" element={<BookingCart />} />
         <Route path="/booking/details/:bookingId" element={<BookingDetail />} />

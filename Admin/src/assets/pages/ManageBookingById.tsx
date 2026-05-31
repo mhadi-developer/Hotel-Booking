@@ -1,5 +1,5 @@
-
 import { useEffect, useState, type JSX } from "react";
+import { useForm } from "react-hook-form";
 import "../utils/css/manageBookingById.css";
 import axiosInstance from "../resources/axiosInstance";
 import { useParams } from "react-router";
@@ -27,7 +27,7 @@ export interface Room {
   id: string;
   name: string;
   type: string;
-  price: number; 
+  price: number;
   isBooked: boolean;
   createdAt: string;
   updatedAt: string;
@@ -82,15 +82,25 @@ interface QuickAction {
 type TabKey = "overview" | "guest" | "room" | "billing" | "history";
 
 /* ══════════════════════════════════════════════════
+   REACT HOOK FORM — Booking Edit
+══════════════════════════════════════════════════ */
+
+interface BookingEditFormValues {
+  checkIn: string;
+  checkOut: string;
+  guest: number;
+}
+
+/* ══════════════════════════════════════════════════
    CONSTANTS
 ══════════════════════════════════════════════════ */
 
 const STATUS_OPTIONS: BookingStatus[] = ["pending", "confirmed", "cancelled"];
 
 const STATUS_META: Record<BookingStatus, StatusMeta> = {
-  pending:   { label: "Pending",     dot: "#D4A017" },
-  confirmed: { label: "Confirmed",   dot: "#27AE60" },
-  cancelled: { label: "Cancelled",   dot: "#E53935" },
+  pending:   { label: "Pending",   dot: "#D4A017" },
+  confirmed: { label: "Confirmed", dot: "#27AE60" },
+  cancelled: { label: "Cancelled", dot: "#E53935" },
 };
 
 const TABS: TabKey[] = ["overview", "guest", "room", "billing", "history"];
@@ -131,6 +141,12 @@ function isAvatarUrl(avatar?: string): boolean {
 function fmtDate(dateStr?: string, opts?: Intl.DateTimeFormatOptions): string {
   if (!dateStr) return "—";
   return new Date(dateStr).toLocaleDateString("en-GB", opts);
+}
+
+/** Convert a JS Date or ISO string to the value="YYYY-MM-DD" format for <input type="date"> */
+function toInputDate(dateStr?: string): string {
+  if (!dateStr) return "";
+  return new Date(dateStr).toISOString().split("T")[0];
 }
 
 /* ══════════════════════════════════════════════════
@@ -248,27 +264,212 @@ function RoomGallery({ images, roomName }: RoomGalleryProps): JSX.Element | null
 }
 
 /* ══════════════════════════════════════════════════
+   BOOKING EDIT MODAL  (React Hook Form + PATCH)
+══════════════════════════════════════════════════ */
+
+interface BookingEditModalProps {
+  booking: Booking;
+  onClose: () => void;
+  onSaved: (updated: Booking) => void;
+}
+
+function BookingEditModal({ booking, onClose, onSaved }: BookingEditModalProps): JSX.Element {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<BookingEditFormValues>({
+    defaultValues: {
+      checkIn:  toInputDate(booking.checkIn),
+      checkOut: toInputDate(booking.checkOut),
+      guest:    booking.guest,
+    },
+  });
+
+  const watchedCheckIn  = watch("checkIn");
+  const watchedCheckOut = watch("checkOut");
+  const previewNights   = calcNights(watchedCheckIn, watchedCheckOut);
+
+  const onSubmit = async (data: BookingEditFormValues): Promise<void> => {
+    const response = await axiosInstance.patch(
+      `${import.meta.env.VITE_API_BASE_URL}/admin/update/booking/${booking.id}`,
+      {
+        checkIn:  data.checkIn,
+        checkOut: data.checkOut,
+        guest:    Number(data.guest),
+      },
+    );
+
+    // Adjust to your actual response shape if needed
+    const updatedBooking: Booking = response?.data?.updatedBooking ?? {
+      ...booking,
+      checkIn:  data.checkIn,
+      checkOut: data.checkOut,
+      guest:    Number(data.guest),
+    };
+
+    onSaved(updatedBooking);
+    onClose();
+  };
+
+  return (
+    /* ── Backdrop ── */
+    <div className="bmp-modal-backdrop" onClick={onClose}>
+      {/* ── Modal card ── */}
+      <div
+        className="bmp-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bmp-modal-title"
+      >
+        {/* Header */}
+        <div className="bmp-modal__header">
+          <div className="bmp-modal__header-icon">✏️</div>
+          <div>
+            <div id="bmp-modal-title" className="bmp-modal__title">Edit Booking</div>
+            <div className="bmp-modal__subtitle">Modify dates &amp; guest count</div>
+          </div>
+          <button
+            className="bmp-modal__close"
+            onClick={onClose}
+            aria-label="Close modal"
+            type="button"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <div className="bmp-modal__body">
+
+            {/* Check-In / Check-Out row */}
+            <div className="bmp-modal__row">
+              {/* Check-In */}
+              <div className="bmp-modal__field">
+                <label htmlFor="bmp-checkIn" className="bmp-modal__label">
+                  Check-In Date
+                </label>
+                <input
+                  id="bmp-checkIn"
+                  type="date"
+                  className={`bmp-modal__input${errors.checkIn ? " bmp-modal__input--error" : ""}`}
+                  {...register("checkIn", {
+                    required: "Check-in date is required",
+                  })}
+                />
+                {errors.checkIn && (
+                  <span className="bmp-modal__error">{errors.checkIn.message}</span>
+                )}
+              </div>
+
+              {/* Check-Out */}
+              <div className="bmp-modal__field">
+                <label htmlFor="bmp-checkOut" className="bmp-modal__label">
+                  Check-Out Date
+                </label>
+                <input
+                  id="bmp-checkOut"
+                  type="date"
+                  className={`bmp-modal__input${errors.checkOut ? " bmp-modal__input--error" : ""}`}
+                  {...register("checkOut", {
+                    required: "Check-out date is required",
+                    validate: (val) =>
+                      !watchedCheckIn ||
+                      new Date(val) > new Date(watchedCheckIn) ||
+                      "Check-out must be after check-in",
+                  })}
+                />
+                {errors.checkOut && (
+                  <span className="bmp-modal__error">{errors.checkOut.message}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Computed-nights badge */}
+            <div className="bmp-modal__nights-badge">
+              <span className="bmp-modal__nights-label">Duration</span>
+              <span className="bmp-modal__nights-value">
+                {previewNights > 0
+                  ? `${previewNights} night${previewNights !== 1 ? "s" : ""}`
+                  : "—"}
+              </span>
+            </div>
+
+            {/* Guests */}
+            <div className="bmp-modal__field" style={{ maxWidth: 200 }}>
+              <label htmlFor="bmp-guest" className="bmp-modal__label">
+                Number of Guests
+              </label>
+              <input
+                id="bmp-guest"
+                type="number"
+                min={1}
+                max={20}
+                className={`bmp-modal__input${errors.guest ? " bmp-modal__input--error" : ""}`}
+                {...register("guest", {
+                  required: "Guest count is required",
+                  min: { value: 1, message: "At least 1 guest" },
+                  max: { value: 20, message: "Maximum 20 guests" },
+                  valueAsNumber: true,
+                })}
+              />
+              {errors.guest && (
+                <span className="bmp-modal__error">{errors.guest.message}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bmp-modal__footer">
+            <button
+              type="button"
+              className="bmp-btn-outline-gold"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bmp-btn-dark-gold"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Saving…" : "Save Changes"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════
    MAIN PAGE COMPONENT
 ══════════════════════════════════════════════════ */
 
 export default function BookingManagePage(): JSX.Element {
   const { bookingId } = useParams<{ bookingId: string }>();
-  const [booking, setBooking] = useState<Booking | null>(null);
+
+  const [booking, setBooking]               = useState<Booking | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<BookingStatus>();
-  const [noteText, setNoteText] = useState<string>("");
-  const [notes, setNotes] = useState<AdminNote[]>([]);
-  const [saving, setSaving] = useState<boolean>(false);
-  const [saved, setSaved] = useState<boolean>(false);
-  const [searchId, setSearchId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<TabKey>("overview");
-  const [loading, setLoading] = useState<boolean>(true);
+  const [noteText, setNoteText]             = useState<string>("");
+  const [notes, setNotes]                   = useState<AdminNote[]>([]);
+  const [saving, setSaving]                 = useState<boolean>(false);
+  const [saved, setSaved]                   = useState<boolean>(false);
+  const [searchId, setSearchId]             = useState<string>("");
+  const [activeTab, setActiveTab]           = useState<TabKey>("overview");
+  const [loading, setLoading]               = useState<boolean>(true);
+  const [showEditModal, setShowEditModal]   = useState<boolean>(false);   // ← NEW
 
   useEffect(() => {
     async function getBookingById() {
       try {
         setLoading(true);
         const response = await axiosInstance.get(
-          `${import.meta.env.VITE_API_BASE_URL}/admin/get/booking/${bookingId}`
+          `${import.meta.env.VITE_API_BASE_URL}/admin/get/booking/${bookingId}`,
         );
         const fetchedData = response?.data?.fetchedBookingById;
         setBooking(fetchedData);
@@ -287,35 +488,66 @@ export default function BookingManagePage(): JSX.Element {
   }, [bookingId]);
 
   /* Derived values straight from backend fields */
-  const nights: number = calcNights(booking?.checkIn, booking?.checkOut);
-  const roomTotal: number = (booking?.room?.price ?? 0) * nights;
-  const userData = booking?.user;
-  const roomData = booking?.room;
+  const nights: number       = calcNights(booking?.checkIn, booking?.checkOut);
+  const roomTotal: number    = (booking?.room?.price ?? 0) * nights;
+  const userData             = booking?.user;
+  const roomData             = booking?.room;
 
-  /* Handlers */
-  const handleStatusUpdate = (): void => {
+  /* ── Status PATCH ── */
+  const handleStatusUpdate = async (): Promise<void> => {
     if (!booking || selectedStatus === booking.status) return;
     setSaving(true);
-    setTimeout(() => {
-      setBooking((prev) => (prev ? { ...prev, status: selectedStatus! } : null));
-      setSaving(false);
+    try {
+      const response = await axiosInstance.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/admin/update/booking/${booking.id}`,
+        { status: selectedStatus },
+      );
+
+      // Use the server's updated booking if returned; otherwise apply locally
+      const updatedBooking: Booking =
+        response?.data?.updatedBooking ?? { ...booking, status: selectedStatus! };
+
+      setBooking(updatedBooking);
+      setSelectedStatus(updatedBooking.status);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-    }, 900);
+    } catch (error) {
+      console.error("Failed to update booking status:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  /* ── Booking-edit saved callback ── */
+  const handleBookingEdited = (updatedBooking: Booking): void => {
+    setBooking(updatedBooking);
+  };
+
+  /* Quick Actions dispatcher */
+  const handleQuickAction = (label: string): void => {
+    if (label === "Edit Booking Dates") {
+      setShowEditModal(true);
+    }
+    // Other actions can be wired up here
   };
 
   const handleAddNote = (): void => {
     if (!noteText.trim()) return;
-    setNotes((prev) => [...prev, { text: noteText, time: new Date().toLocaleString() }]);
+    setNotes((prev) => [
+      ...prev,
+      { text: noteText, time: new Date().toLocaleString() },
+    ]);
     setNoteText("");
   };
 
-  const tabLabel = (t: string): string => t.charAt(0).toUpperCase() + t.slice(1);
+  const tabLabel = (t: string): string =>
+    t.charAt(0).toUpperCase() + t.slice(1);
 
   const applyBtnClass = (): string => {
     if (saving) return "bmp-status-apply-btn bmp-status-apply-btn--saving";
     if (saved)  return "bmp-status-apply-btn bmp-status-apply-btn--saved";
-    if (selectedStatus === booking?.status) return "bmp-status-apply-btn bmp-status-apply-btn--disabled";
+    if (selectedStatus === booking?.status)
+      return "bmp-status-apply-btn bmp-status-apply-btn--disabled";
     return "bmp-status-apply-btn bmp-status-apply-btn--idle";
   };
 
@@ -327,7 +559,16 @@ export default function BookingManagePage(): JSX.Element {
 
   if (loading) {
     return (
-      <div className="bmp-page" style={{ justifyContent: "center", alignItems: "center", display: "flex", height: "100vh", color: "#D4A017" }}>
+      <div
+        className="bmp-page"
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          display: "flex",
+          height: "100vh",
+          color: "#D4A017",
+        }}
+      >
         <h3>Loading Luxury Suite Management Panel...</h3>
       </div>
     );
@@ -335,7 +576,16 @@ export default function BookingManagePage(): JSX.Element {
 
   if (!booking) {
     return (
-      <div className="bmp-page" style={{ justifyContent: "center", alignItems: "center", display: "flex", height: "100vh", color: "#E53935" }}>
+      <div
+        className="bmp-page"
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          display: "flex",
+          height: "100vh",
+          color: "#E53935",
+        }}
+      >
         <h3>Booking record could not be recovered. Verify Registry Log.</h3>
       </div>
     );
@@ -343,6 +593,16 @@ export default function BookingManagePage(): JSX.Element {
 
   return (
     <div className="bmp-page">
+
+      {/* ─── Edit Modal ─── */}
+      {showEditModal && (
+        <BookingEditModal
+          booking={booking}
+          onClose={() => setShowEditModal(false)}
+          onSaved={handleBookingEdited}
+        />
+      )}
+
       {/* ─── Header ─── */}
       <header className="bmp-header">
         <div className="bmp-header__inner">
@@ -392,7 +652,12 @@ export default function BookingManagePage(): JSX.Element {
             <div className="bmp-id-bar__divider" />
             <StatusBadge status={booking.status} />
             <div className="bmp-id-bar__meta">
-              Created {fmtDate(booking.createdAt, { day: "numeric", month: "short", year: "numeric" })}
+              Created{" "}
+              {fmtDate(booking.createdAt, {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </div>
           </div>
 
@@ -416,7 +681,9 @@ export default function BookingManagePage(): JSX.Element {
                       {userData.firstName} {userData.lastName}
                     </div>
                     <div className="bmp-guest-loyalty">
-                      {userData.role === "admin" ? "Administrator" : "Registered Guest"}
+                      {userData.role === "admin"
+                        ? "Administrator"
+                        : "Registered Guest"}
                     </div>
                   </div>
                   <span className="bmp-loyalty-pill">
@@ -424,14 +691,18 @@ export default function BookingManagePage(): JSX.Element {
                   </span>
                 </div>
 
-                <InfoRow label="User ID" value={userData.id} mono />
-                <InfoRow label="Email" value={userData.email} />
-                <InfoRow label="First Name" value={userData.firstName} />
-                <InfoRow label="Last Name" value={userData.lastName} />
-                <InfoRow label="Role" value={userData.role} />
+                <InfoRow label="User ID"      value={userData.id}        mono />
+                <InfoRow label="Email"        value={userData.email} />
+                <InfoRow label="First Name"   value={userData.firstName} />
+                <InfoRow label="Last Name"    value={userData.lastName} />
+                <InfoRow label="Role"         value={userData.role} />
                 <InfoRow
                   label="Member Since"
-                  value={fmtDate(userData.createdAt, { day: "numeric", month: "short", year: "numeric" })}
+                  value={fmtDate(userData.createdAt, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 />
               </Section>
             )}
@@ -452,17 +723,26 @@ export default function BookingManagePage(): JSX.Element {
                   </div>
                 </div>
 
-                <InfoRow label="Room Type" value={roomData.type} />
+                <InfoRow label="Room Type"    value={roomData.type} />
                 <InfoRow label="Rate per Night" value={`£${roomData.price}`} accent />
-                <InfoRow label="Availability" value={roomData.isBooked ? "Currently Booked" : "Available"} />
+                <InfoRow
+                  label="Availability"
+                  value={roomData.isBooked ? "Currently Booked" : "Available"}
+                />
                 <InfoRow
                   label="Last Updated"
-                  value={fmtDate(roomData.updatedAt, { day: "numeric", month: "short", year: "numeric" })}
+                  value={fmtDate(roomData.updatedAt, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 />
                 <InfoRow label="Room ID" value={roomData.id} mono />
                 <InfoRow
                   label="Images"
-                  value={`${roomData.images?.length ?? 0} photo${roomData.images?.length !== 1 ? "s" : ""}`}
+                  value={`${roomData.images?.length ?? 0} photo${
+                    roomData.images?.length !== 1 ? "s" : ""
+                  }`}
                 />
               </Section>
             )}
@@ -474,7 +754,9 @@ export default function BookingManagePage(): JSX.Element {
                   <span className="bmp-billing-row__name">
                     {roomData.name} × {nights} night{nights !== 1 ? "s" : ""}
                   </span>
-                  <span className="bmp-billing-row__price">£{roomTotal.toLocaleString()}</span>
+                  <span className="bmp-billing-row__price">
+                    £{roomTotal.toLocaleString()}
+                  </span>
                 </div>
 
                 {booking.totalPrice > roomTotal && (
@@ -493,8 +775,14 @@ export default function BookingManagePage(): JSX.Element {
                   </span>
                 </div>
 
-                <InfoRow label="Guests" value={`${booking.guest} guest${booking.guest !== 1 ? "s" : ""}`} />
-                <InfoRow label="Nights" value={`${nights} night${nights !== 1 ? "s" : ""}`} />
+                <InfoRow
+                  label="Guests"
+                  value={`${booking.guest} guest${booking.guest !== 1 ? "s" : ""}`}
+                />
+                <InfoRow
+                  label="Nights"
+                  value={`${nights} night${nights !== 1 ? "s" : ""}`}
+                />
                 <InfoRow label="Rate / night" value={`£${roomData.price}`} accent />
               </Section>
             )}
@@ -513,17 +801,32 @@ export default function BookingManagePage(): JSX.Element {
                     <StatusBadge status={booking.status} size="sm" />
                     <div className="bmp-history-item__date">
                       {fmtDate(booking.createdAt, {
-                        day: "numeric", month: "short", year: "numeric",
-                        hour: "2-digit", minute: "2-digit",
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </div>
-                    <div className="bmp-history-item__by">Created · Booking #{booking.id}</div>
+                    <div className="bmp-history-item__by">
+                      Created · Booking #{booking.id}
+                    </div>
                   </div>
                 </div>
 
-                <div className="bmp-notes-label" style={{ marginTop: 20 }}>Internal Admin Notes</div>
+                <div className="bmp-notes-label" style={{ marginTop: 20 }}>
+                  Internal Admin Notes
+                </div>
                 {notes.length === 0 && (
-                  <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 12 }}>No notes yet.</p>
+                  <p
+                    style={{
+                      fontSize: 12,
+                      color: "var(--text-muted)",
+                      marginBottom: 12,
+                    }}
+                  >
+                    No notes yet.
+                  </p>
                 )}
                 {notes.map((n, i) => (
                   <div key={i} className="bmp-note-card">
@@ -538,7 +841,9 @@ export default function BookingManagePage(): JSX.Element {
                     onChange={(e) => setNoteText(e.target.value)}
                     placeholder="Add internal admin note…"
                   />
-                  <button className="bmp-notes-form__btn" onClick={handleAddNote}>ADD</button>
+                  <button className="bmp-notes-form__btn" onClick={handleAddNote}>
+                    ADD
+                  </button>
                 </div>
               </Section>
             )}
@@ -546,13 +851,17 @@ export default function BookingManagePage(): JSX.Element {
             {/* ── OVERVIEW ONLY: Booking summary card ── */}
             {activeTab === "overview" && (
               <Section title="Booking Summary" icon="📋">
-                <InfoRow label="Booking ID" value={booking.id} mono />
-                <InfoRow label="User ID" value={booking.userId} mono />
-                <InfoRow label="Room ID" value={booking.roomId} mono />
-                <InfoRow label="Guests" value={booking.guest} />
+                <InfoRow label="Booking ID" value={booking.id}       mono />
+                <InfoRow label="User ID"    value={booking.userId}   mono />
+                <InfoRow label="Room ID"    value={booking.roomId}   mono />
+                <InfoRow label="Guests"     value={booking.guest} />
                 <InfoRow
                   label="Created At"
-                  value={fmtDate(booking.createdAt, { day: "numeric", month: "short", year: "numeric" })}
+                  value={fmtDate(booking.createdAt, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
                 />
               </Section>
             )}
@@ -565,8 +874,20 @@ export default function BookingManagePage(): JSX.Element {
               <div className="bmp-stay-card__label">Stay Summary</div>
               <div className="bmp-stay-grid">
                 {[
-                  { label: "Check-In", value: fmtDate(booking.checkIn, { day: "2-digit", month: "short" }) },
-                  { label: "Check-Out", value: fmtDate(booking.checkOut, { day: "2-digit", month: "short" }) },
+                  {
+                    label: "Check-In",
+                    value: fmtDate(booking.checkIn, {
+                      day: "2-digit",
+                      month: "short",
+                    }),
+                  },
+                  {
+                    label: "Check-Out",
+                    value: fmtDate(booking.checkOut, {
+                      day: "2-digit",
+                      month: "short",
+                    }),
+                  },
                   { label: "Nights", value: String(nights) },
                   { label: "Guests", value: String(booking.guest) },
                 ].map((s) => (
@@ -589,8 +910,8 @@ export default function BookingManagePage(): JSX.Element {
               <div className="bmp-panel-title">Update Status</div>
               <div className="bmp-status-current">
                 <div className="bmp-status-current-label">Current</div>
-                              <StatusBadge status={booking?.status} />
-                              <span>{booking?.status }</span>
+                <StatusBadge status={booking?.status} />
+                <span>{booking?.status}</span>
               </div>
 
               <div className="bmp-status-change-label">Change To</div>
@@ -598,7 +919,9 @@ export default function BookingManagePage(): JSX.Element {
                 {STATUS_OPTIONS.filter((s) => s !== booking.status).map((s) => (
                   <label
                     key={s}
-                    className={`bmp-status-option${selectedStatus === s ? " bmp-status-option--selected" : ""}`}
+                    className={`bmp-status-option${
+                      selectedStatus === s ? " bmp-status-option--selected" : ""
+                    }`}
                   >
                     <input
                       type="radio"
@@ -620,39 +943,16 @@ export default function BookingManagePage(): JSX.Element {
               </button>
             </div>
 
-            {/* Room availability badge */}
-            {roomData && (
-              <div className="bmp-status-panel" style={{ marginBottom: 20 }}>
-                <div className="bmp-panel-title">Room Status</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
-                  <span
-                    className="bmp-badge bmp-badge--md"
-                    style={{
-                      background: roomData.isBooked ? "#FFF0F0" : "#EAFAF1",
-                      color:      roomData.isBooked ? "#8B1A1A" : "#1A6B3A",
-                      border:     `1px solid ${roomData.isBooked ? "#E5393522" : "#27AE6022"}`,
-                    }}
-                  >
-                    <span
-                      className="bmp-badge__dot"
-                      style={{ background: roomData.isBooked ? "#E53935" : "#27AE60" }}
-                    />
-                    {roomData.isBooked ? "Occupied" : "Available"}
-                  </span>
-                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                    {roomData.name}
-                  </span>
-                </div>
-              </div>
-            )}
-
             {/* Quick Actions */}
             <div className="bmp-actions-panel">
               <div className="bmp-panel-title">Quick Actions</div>
               {QUICK_ACTIONS.map((a) => (
                 <button
                   key={a.label}
-                  className={`bmp-action-btn${a.danger ? " bmp-action-btn--danger" : ""}`}
+                  className={`bmp-action-btn${
+                    a.danger ? " bmp-action-btn--danger" : ""
+                  }`}
+                  onClick={() => handleQuickAction(a.label)}
                 >
                   <span className="bmp-action-btn__icon">{a.icon}</span>
                   {a.label}

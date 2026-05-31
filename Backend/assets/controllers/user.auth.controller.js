@@ -134,3 +134,33 @@ export const logoutUser = async (req, res) => {
 
 
 };
+
+// *******************************************
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { firstName, lastName, email, avatar } = req.body;
+
+    await prisma.User.update({
+      where: {
+        id: id
+      },
+      data: {
+        firstName, lastName, email, avatar
+
+      }
+    });
+
+
+    res.status(201).json({
+      message: 'User Update Successfully',
+      success: true
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || "Server Error",
+      success: false
+     })
+  }
+}
