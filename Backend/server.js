@@ -32,8 +32,8 @@ const httpServer = createServer(app);
 export const io = new Server(httpServer, {
   cors: {
     origin: [
-      process.env.CLIENT_URL || "http://localhost:5173",
-      process.env.ADMIN_URL || "http://localhost:5176",
+      process.env.CLIENT_URL || "https://hotel-booking-six-green.vercel.app/",
+      process.env.ADMIN_URL || "https://hotel-booking-253f-admin.vercel.app/",
     ],
     credentials: true,
   },
@@ -58,11 +58,10 @@ const PORT = process.env.PORT || 5000;
 
 // ─────────────────────────────────────────────
 // CORS
-// ─────────────────────────────────────────────
-
+// ──────────────────────────────
 const origin = [
-  process.env.CLIENT_URL || "http://localhost:5173",
-  process.env.ADMIN_URL || "http://localhost:5176",
+  process.env.CLIENT_URL || "https://hotel-booking-six-green.vercel.app/",
+  process.env.ADMIN_URL || "https://hotel-booking-253f-admin.vercel.app/",
 ];
 
 // ─────────────────────────────────────────────
