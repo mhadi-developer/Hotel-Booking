@@ -1,111 +1,156 @@
-name: Deploy All Services
+name: Production Deployment
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
 
 jobs:
-  # ---------- BACKEND ----------
-  build-and-test-backend:
+
+  ####################################################
+  # BACKEND BUILD
+  ####################################################
+
+  backend-build:
+    name: Build Backend
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     defaults:
       run:
         working-directory: Backend
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
           cache-dependency-path: Backend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Generate Prisma client
+      - name: Generate Prisma Client
         run: npx prisma generate
 
-      # Uncomment once you have a test script in backend/package.json
-      # - name: Run tests
+      # Enable after adding tests
+      # - name: Run Tests
       #   run: npm test
 
-      - name: Build check
+      - name: Build Backend
         run: npm run build --if-present
 
-  deploy-backend:
-    needs: build-and-test-backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Render deploy
-        run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
 
-  # ---------- FRONTEND ----------
-  deploy-frontend:
+  ####################################################
+  # BACKEND DEPLOY (RENDER)
+  ####################################################
+
+  backend-deploy:
+    name: Deploy Backend
     runs-on: ubuntu-latest
+    needs: backend-build
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+
+
+  ####################################################
+  # FRONTEND DEPLOY (VERCEL)
+  ####################################################
+
+  frontend-deploy:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
     defaults:
       run:
         working-directory: Frontend
+
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_FRONTEND }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
           cache-dependency-path: Frontend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install -g vercel@latest
 
-      - name: Pull Vercel environment
+      - name: Pull Environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build project
+      - name: Build Project
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy
+        run: vercel deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
 
-  # ---------- ADMIN ----------
-  deploy-admin:
+
+  ####################################################
+  # ADMIN DEPLOY (VERCEL)
+  ####################################################
+
+  admin-deploy:
+    name: Deploy Admin
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
     defaults:
       run:
         working-directory: Admin
+
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets['VERCEL_PROJECT_ID_ADMIN'] }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_ADMIN }}
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
           cache-dependency-path: Admin/package-lock.json
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install -g vercel@latest
 
-      - name: Pull Vercel environment
+      - name: Pull Environment
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Build project
+      - name: Build Project
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy
+        run: vercel deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
