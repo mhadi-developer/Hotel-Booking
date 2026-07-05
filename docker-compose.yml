@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: dockerfile
+    container_name: backend
+    env_file:
+      - ./Backend/.env
+    ports:
+      - "7004:7004"
+    # Lets the container reach Postgres running on your host machine via
+    # host.docker.internal (works on Docker Desktop Mac/Windows out of the box;
+    # 'host-gateway' makes it work on Linux too, Docker 20.10+)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  admin:
+    build:
+      context: ./Admin
+      dockerfile: dockerfile
+    container_name: admin
+    ports:
+      - "5176:5176"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

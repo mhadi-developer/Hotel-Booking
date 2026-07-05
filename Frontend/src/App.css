@@ -20,13 +20,13 @@
 .owl-nav button.owl-next:hover {
   transform: scale(1.1);
   color:white !important;
-};
+}
 
 
 .btn-custom:hover{
   background: rgb(192, 171, 13) !important;
   color: white !important;
-};
+}
 
 .services__item h4:hover{
   color: #ebcaab !important;

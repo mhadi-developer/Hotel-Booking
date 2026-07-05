@@ -117,9 +117,9 @@ const BookingCart = () => {
         );
 
         setCartItems(response?.data?.fetchedAllUserBookings || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError(
-          err?.response?.data?.message || "Failed to load reservations."
+          (err as { response?: { data?: { message?: string } } })?.response?.data?.message || "Failed to load reservations."
         );
       } finally {
         setLoading(false);
@@ -165,7 +165,7 @@ const handleConfirmCancel = async () => {
     );
 
     setConfirmCancelId(null);
-  } catch (err: any) {
+  } catch (err: unknown) {
     alert(
       err?.response?.data?.message ||
         "Could not cancel booking."
@@ -206,7 +206,6 @@ const handleConfirmCancel = async () => {
   // ───────────────────────────────────────────────────────────
   // RENDER
   // ───────────────────────────────────────────────────────────
-
   return (
     <>
       <OffCanvas />
@@ -240,121 +239,109 @@ const handleConfirmCancel = async () => {
           {/* ERROR */}
           {error && <div className="gm-error">{error}</div>}
 
-          {/* LOADING */}
-          {loading ? (
-            <div className="gm-state-box">
-              <div className="gm-spinner" />
-              <p className="gm-state-subtitle">
-                Retrieving your reservations…
-              </p>
-            </div>
-          ) : cartItems.length === 0 ? (
+          {/* LOADING / EMPTY / BOOKINGS (extracted) */}
+          {(() => {
+            if (loading) {
+              return (
+                <div className="gm-state-box">
+                  <div className="gm-spinner" />
+                  <p className="gm-state-subtitle">Retrieving your reservations…</p>
+                </div>
+              );
+            }
 
-            // EMPTY STATE
-            <div className="gm-state-box">
-              <div className="gm-state-icon">🛎️</div>
-              <h2 className="gm-state-title">No reservations found</h2>
-              <p className="gm-state-subtitle">
-                You have not booked any rooms yet.
-              </p>
-              <button
-                className="gm-checkout-btn mt-4"
-                style={{ maxWidth: "220px", margin: "2rem auto 0" }}
-                onClick={() => { window.location.href = "/rooms"; }}
-              >
-                Explore Rooms
-              </button>
-            </div>
-          ) : (
+            if (cartItems.length === 0) {
+              return (
+                <div className="gm-state-box">
+                  <div className="gm-state-icon">🛎️</div>
+                  <h2 className="gm-state-title">No reservations found</h2>
+                  <p className="gm-state-subtitle">You have not booked any rooms yet.</p>
+                  <button
+                    className="gm-checkout-btn mt-4"
+                    style={{ maxWidth: "220px", margin: "2rem auto 0" }}
+                    onClick={() => { globalThis.location.href = "/rooms"; }}
+                  >
+                    Explore Rooms
+                  </button>
+                </div>
+              );
+            }
 
-            // BOOKINGS GRID
-            <div className="row g-4">
-              {cartItems.map((item) => (
-                <div className="col-12" key={item.id}>
-                  <div className={`gm-booking-item ${visible ? "visible" : ""}`}>
-                    <div className="gm-booking-card">
+            return (
+              <div className="row g-4">
+                {cartItems.map((item) => (
+                  <div className="col-12" key={item.id}>
+                    <div className={`gm-booking-item ${visible ? "visible" : ""}`}>
+                      <div className="gm-booking-card">
+                        <div className="gm-booking-image-wrapper">
+                          <img
+                            src={item?.room?.images[0]?.secure_url}
+                            alt={item.roomName}
+                            className="gm-booking-image"
+                          />
+                        </div>
 
-                      {/* IMAGE */}
-                      <div className="gm-booking-image-wrapper">
-                        <img
-                          src={item?.room?.images[0]?.secure_url}
-                          alt={item.roomName}
-                          className="gm-booking-image"
-                        />
-                      </div>
+                        <div className="gm-booking-content">
+                          <div className="d-flex justify-content-between align-items-start flex-wrap gap-4">
+                            <div className="flex-grow-1">
+                              <h3 className="gm-room-name">{item.roomName}</h3>
 
-                      {/* CONTENT */}
-                      <div className="gm-booking-content">
-                        <div className="d-flex justify-content-between align-items-start flex-wrap gap-4">
+                              <div className="gm-booking-meta">
+                                <p>
+                                  <strong>Check In:</strong>{" "}
+                                  {formatDate(item.checkIn)}
+                                </p>
+                                <p>
+                                  <strong>Check Out:</strong>{" "}
+                                  {formatDate(item.checkOut)}
+                                </p>
+                                <p>
+                                  <strong>Guests:</strong> {item.guest}
+                                </p>
+                                <p>
+                                  <strong>Total Price:</strong> ${item.totalPrice}
+                                </p>
+                              </div>
 
-                          {/* LEFT */}
-                          <div className="flex-grow-1">
-                            <h3 className="gm-room-name">{item.roomName}</h3>
-
-                            <div className="gm-booking-meta">
-                              <p>
-                                <strong>Check In:</strong>{" "}
-                                {formatDate(item.checkIn)}
-                              </p>
-                              <p>
-                                <strong>Check Out:</strong>{" "}
-                                {formatDate(item.checkOut)}
-                              </p>
-                              <p>
-                                <strong>Guests:</strong> {item.guest}
-                              </p>
-                              <p>
-                                <strong>Total Price:</strong> ${item.totalPrice}
-                              </p>
+                              <span
+                                className="gm-status-badge"
+                                style={{
+                                  color: statusColor[item.status] || "#aaa",
+                                  borderColor: statusColor[item.status] || "#aaa",
+                                  background: `${statusColor[item.status]}15`,
+                                }}
+                              >
+                                {item.status}
+                              </span>
                             </div>
 
-                            {/* STATUS */}
-                            <span
-                              className="gm-status-badge"
-                              style={{
-                                color:       statusColor[item.status] || "#aaa",
-                                borderColor: statusColor[item.status] || "#aaa",
-                                background:  `${statusColor[item.status]}15`,
-                              }}
-                            >
-                              {item.status}
-                            </span>
-                          </div>
-
-                          {/* ACTIONS */}
-                          <div className="gm-booking-actions">
-
-                            {/* VIEW DETAILS */}
-                            <button
-                              className="gm-view-btn"
-                              onClick={() => {
-                                window.location.href = `/booking/details/${item.id}`;
-                              }}
-                            >
-                              View Details
-                            </button>
-
-                            {/* CANCEL — opens modal instead of deleting directly */}
-                            {item.status === "PENDING" && (
+                            <div className="gm-booking-actions">
                               <button
-                                className="gm-btn-remove"
-                                onClick={() => setConfirmCancelId(item.id)}
-                                disabled={removingId === item.id}
+                                className="gm-view-btn"
+                                onClick={() => { globalThis.location.href = `/booking/details/${item.id}`; }}
                               >
-                                Cancel Booking
+                                View Details
                               </button>
-                            )}
-                          </div>
 
+                              {item.status === "PENDING" && (
+                                <button
+                                  className="gm-btn-remove"
+                                  onClick={() => setConfirmCancelId(item.id)}
+                                  disabled={removingId === item.id}
+                                >
+                                  Cancel Booking
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
-
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            );
+          })()}
         </div>
          <ToastContainer
         position="top-center"
