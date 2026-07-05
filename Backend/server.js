@@ -84,7 +84,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("/*", cors(corsOptions)); // Handle global preflight OPTIONS requests
+app.options("/:splat*", cors(corsOptions)); // Handle global preflight OPTIONS requests
 
 // Parsing and Limiting Middlewares
 app.use(limiter);
