@@ -28,7 +28,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   process.env.CLIENT_URL
     ? process.env.CLIENT_URL.replace(/\/$/, "")
-    : "https://hotel-booking-six-green.vercel.app",
+    : "https://hotel-booking-six-green.vercel.app/",
   process.env.ADMIN_URL
     ? process.env.ADMIN_URL.replace(/\/$/, "")
     : "https://hotel-booking-253f-admin.vercel.app",

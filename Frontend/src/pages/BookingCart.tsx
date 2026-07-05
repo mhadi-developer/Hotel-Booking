@@ -166,10 +166,7 @@ const handleConfirmCancel = async () => {
 
     setConfirmCancelId(null);
   } catch (err: unknown) {
-    alert(
-      err?.response?.data?.message ||
-        "Could not cancel booking."
-    );
+    toast.error(err);
   } finally {
     setRemovingId(null);
   }
