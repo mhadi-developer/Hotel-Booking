@@ -98,7 +98,11 @@ app.use(cookieParser());
 // ─────────────────────────────────────────────
 // ROUTES
 // ─────────────────────────────────────────────
-
+app.get("/", (req, res) => {
+  res
+    .status(200)
+    .json({ status: "healthy", message: "Server is running successfully!" });
+});
 app.use("/api", userAuthRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", roomsRoutes);
