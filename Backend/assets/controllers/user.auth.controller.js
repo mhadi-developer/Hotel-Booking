@@ -67,8 +67,8 @@ export const loginUser = async (req, res) => {
        res
          .cookie("token", jwtToken, {
            httpOnly: true,
-           secure: true, // true in production (HTTPS)
-           sameSite: "strict",
+           secure: true, // (HTTPS)
+           sameSite: "none",
            maxAge: 2 * 60 * 60 * 1000, // 2 hours
          })
          .status(200)
