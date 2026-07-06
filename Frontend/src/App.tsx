@@ -18,13 +18,13 @@ import UserProfile from "./pages/UserProfile.tsx"
 
 export function App() {
 
-  const { getLoggedInUser  , loggedInUser} = useAuth()
+  const { getLoggedInUser } = useAuth()
   
   useEffect(() => {
     getLoggedInUser();
   }, [])
   
-  console.log(loggedInUser);
+  
   
   return (
     <BrowserRouter>
