@@ -28,10 +28,10 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   process.env.CLIENT_URL
     ? process.env.CLIENT_URL.replace(/\/$/, "")
-    : "https://hotel-booking-six-green.vercel.app/",
+    : "https://hotel-booking-client-pky8zelxr-mhadi-developers-projects.vercel.app/",
   process.env.ADMIN_URL
     ? process.env.ADMIN_URL.replace(/\/$/, "")
-    : "https://hotel-booking-253f-admin.vercel.app",
+    : "https://hotel-booking-253f-admin-xo9nns420-mhadi-developers-projects.vercel.app/",
 ];
 
 // ─────────────────────────────────────────────
@@ -84,7 +84,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions)); // Handle global preflight OPTIONS requests
+app.options("*", cors()); // Handle global preflight OPTIONS requests
 
 // Parsing and Limiting Middlewares
 app.use(limiter);
