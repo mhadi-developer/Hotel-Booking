@@ -26,12 +26,11 @@ const PORT = process.env.PORT || 5000;
 
 // Cleaned origins: Removed trailing slashes to prevent browser CORS mismatch errors
 const allowedOrigins = [
-  process.env.CLIENT_URL
-    ? process.env.CLIENT_URL.replace(/\/$/, "")
-    : "https://hotel-booking-client-4dhd45s26-mhadi-developers-projects.vercel.app/",
-  process.env.ADMIN_URL
-    ? process.env.ADMIN_URL.replace(/\/$/, "")
-    : "https://hotel-booking-253f-admin-d1u0x3i9a-mhadi-developers-projects.vercel.app",
+  
+     "https://hotel-booking-client-4dhd45s26-mhadi-developers-projects.vercel.app/",
+     "https://hotel-booking-six-green.vercel.app/"
+ "https://hotel-booking-253f-admin-d1u0x3i9a-mhadi-developers-projects.vercel.app",
+  "https://hotel-booking-253f-admin.vercel.app/"
 ];
 
 // ─────────────────────────────────────────────
