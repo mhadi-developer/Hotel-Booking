@@ -28,9 +28,9 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   
      "https://hotel-booking-client-4dhd45s26-mhadi-developers-projects.vercel.app/",
-     "https://hotel-booking-six-green.vercel.app/"
+     "https://hotel-booking-six-green.vercel.app/",
  "https://hotel-booking-253f-admin-d1u0x3i9a-mhadi-developers-projects.vercel.app",
-  "https://hotel-booking-253f-admin.vercel.app/"
+  "https://hotel-booking-253f-admin.vercel.app/",
 ];
 
 // ─────────────────────────────────────────────
